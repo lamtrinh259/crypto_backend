@@ -2,13 +2,13 @@
 #       GCP Variables and Commands
 # ----------------------------------
 # path of the file to upload to gcp (the path of the file should be absolute or should match the directory where the make command is run)
-LOCAL_PATH=PATH_TO_FILE_train_1k.csv
+LOCAL_PATH=
 
 # project id
 PROJECT_ID=wagon-bootcamp-337804
 
 # bucket name
-BUCKET_NAME=
+BUCKET_NAME=02-crypto_prediction
 
 # bucket directory in which to store the uploaded file (we choose to name this data as a convention)
 BUCKET_FOLDER=data
@@ -73,6 +73,8 @@ FILENAME=trainer
 
 JOB_NAME=crypto_prediction_$(shell date +'%Y%m%d_%H%M%S')
 
+#### GCS config - - - - - - - - - - - - - - - - - - - - - -
+DOCKER_IMAGE_NAME=crypto_predict
 
 run_locally:
 	@python -m ${PACKAGE_NAME}.${FILENAME}
@@ -87,6 +89,13 @@ gcp_submit_training:
 		--region ${REGION} \
 		--stream-logs
 
+
+gcloud_deploy:
+	gcloud run deploy \
+    --image eu.gcr.io/$PROJECT_ID/$DOCKER_IMAGE_NAME \
+    --platform managed \
+    --region europe-west1 \
+    --set-env-vars "GOOGLE_APPLICATION_CREDENTIALS=/credentials.json"
 # ----------------------------------
 #          INSTALL & TEST
 # ----------------------------------
