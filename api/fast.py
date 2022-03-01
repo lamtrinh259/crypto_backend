@@ -25,6 +25,8 @@ def predict(selected_crypto):
 
     Params: user-selected cryptocurrency
     """
+    # Get the entire dataset from Kaggle (CLI)
+    # kaggle datasets download -d tencars/392-crypto-currency-pairs-at-minute-resolution/
 
     # Get data
     df = get_data(selected_crypto)
