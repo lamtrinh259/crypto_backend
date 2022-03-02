@@ -28,6 +28,11 @@ def get_data(crypto, last_rows=500000):
     return df
 
 
+##Returns a dataframe with time in human-readable time as the index
+def organize_data(df):
+    df.time = pd.to_datetime(df.time, unit='ms')
+    df_t = df.set_index('time')
+    return df_t
 
 if __name__ == '__main__':
     # For testing
