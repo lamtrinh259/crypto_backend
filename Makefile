@@ -75,6 +75,7 @@ JOB_NAME=crypto_prediction_$(shell date +'%Y%m%d_%H%M%S')
 
 #### GCS config - - - - - - - - - - - - - - - - - - - - - -
 DOCKER_IMAGE_NAME=crypto_predict
+GOOGLE_APPLICATION_CREDENTIALS =
 
 run_locally:
 	@python -m ${PACKAGE_NAME}.${FILENAME}
@@ -95,7 +96,7 @@ gcloud_deploy:
     --image eu.gcr.io/$PROJECT_ID/$DOCKER_IMAGE_NAME \
     --platform managed \
     --region europe-west1 \
-    --set-env-vars "GOOGLE_APPLICATION_CREDENTIALS=/credentials.json"
+    --set-env-vars "$GOOGLE_APPLICATION_CREDENTIALS=/credentials.json"
 # ----------------------------------
 #          INSTALL & TEST
 # ----------------------------------
