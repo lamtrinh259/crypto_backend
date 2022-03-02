@@ -18,5 +18,10 @@ def get_data(crypto, last_rows=5000):
     print(df.head())
     return df
 
-# For testing
-get_data('BTC')
+
+
+if __name__ == '__main__':
+    # Test function here
+    # For testing
+    get_data('BTC')
+    pass
