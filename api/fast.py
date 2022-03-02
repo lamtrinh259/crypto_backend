@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 import pandas as pd
 import joblib
-from crypto_backend.data import get_data
+from crypto_backend import get_data
 
 app = FastAPI()
 
