@@ -1,8 +1,11 @@
 '''
 Tools to be used during the operations
 '''
-
 from cgi import test
+
+
+def time_series_generator(X, y):
+    pass
 
 
 # This train test generator's default assumes the following,
