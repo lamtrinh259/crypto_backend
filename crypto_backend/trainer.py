@@ -3,36 +3,49 @@ from crypto_backend.transformers import LogTransformer, DifferenceTransformer
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.pipeline import Pipeline, make_pipeline
 from prophet import Prophet
+import joblib
+
 
 class Trainer(object):
-    def __init__(self, X):
+    def __init__(self, currency):
         '''
             X is a pandas dataframe, with the time column as the index
         '''
-        self.pipeA = None
-        self.X = X
-
+        self.pipeFB = None
+        self.pipeSARIMAX = None
+        self.currency = currency
+        self.X = None
 
     #preprocessing pipeline
-    def preproc_pipe(self):
-        self.pipeA = Pipeline([
+    def preproc_pipe_fb(self):
+        self.pipeFB = Pipeline([
             ('LogTrans', LogTransformer()),
         ])
 
+    def load_data(self):
+        self.X = get_data(self.currency)
+        self.X = organize_data(self.X)
+
+
     #Facebook Prophet Model that makes a 14-day prediction.
     def prophecy_predict(self,days=14):
+        # Loading Data
+        self.load_data()
+        # Creating Pipeline
+        self.preproc_pipe_fb()
+
         fbph = Prophet(seasonality_mode='multiplicative', interval_width=0.95 ,daily_seasonality=True)
         data = self.X.copy()
-        fit_data = self.pipeA.fit_transform(data)
+        fit_data = self.pipeFB.fit_transform(data)
         fit_data = fit_data[['close']].reset_index()
         fit_data.rename(columns={'time':'ds','close':'y'},inplace = True)
         fbph.fit(fit_data)
         future= fbph.make_future_dataframe(periods=days,freq='d')
-        forecast1=fbph.predict(future)
-        forecast1[['trend','yhat_lower','yhat_upper','trend_lower','trend_upper']] = self.pipeA.inverse_transform(
-            forecast1[['trend','yhat_lower','yhat_upper','trend_lower','trend_upper']]
+        forecast=fbph.predict(future)
+        forecast[['yhat','yhat_lower','yhat_upper','trend_lower','trend_upper']] = self.pipeFB.inverse_transform(
+            forecast[['yhat','yhat_lower','yhat_upper','trend_lower','trend_upper']]
             )
-        return forecast1
+        return {'data':self.X,'predict':forecast}
 
     #SARIMAX
     def sarimax_predict():
@@ -41,10 +54,7 @@ class Trainer(object):
 
 if __name__ == '__main__':
     # Test function here
-    data = get_data('BTC')
-    clean_data = organize_data(data)
-    print(clean_data.iloc[0])
-    trainer = Trainer(clean_data)
-    trainer.preproc_pipe()
+    trainer = Trainer('BTC')
     prediction = trainer.prophecy_predict(days=1)
+    print(trainer.X.iloc[0])
     print(prediction)
