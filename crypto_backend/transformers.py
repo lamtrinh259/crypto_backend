@@ -2,7 +2,7 @@
 Transformer classes for the pipeline
 '''
 from sklearn.base import TransformerMixin, BaseEstimator
-
+import numpy as np
 #Log transforms the data set
 class LogTransformer(TransformerMixin, BaseEstimator):
   def __init__(self):
