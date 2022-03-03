@@ -24,7 +24,7 @@ def get_data(crypto, last_rows=500000):
         df_full = pd.read_csv(LTC_USD_S3URI)
         n_rows = len(df_full)
         df = pd.read_csv(LTC_USD_S3URI, skiprows=range(1, n_rows - last_rows))
-    print(df.head())
+    # print(df.head())
     return df
 
 
@@ -33,6 +33,11 @@ def organize_data(df):
     df.time = pd.to_datetime(df.time, unit='ms')
     df_t = df.set_index('time')
     return df_t
+
+def get_X_y(df):
+    y = df['close']
+    X = df.drop('close', axis=1)
+    return X, y
 
 if __name__ == '__main__':
     # For testing
