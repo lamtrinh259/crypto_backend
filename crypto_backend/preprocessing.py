@@ -14,7 +14,7 @@ def MinMax_reverse_fit_transform(MinMaxscaler, X_transformed):
 
 if __name__ == '__main__':
     # For testing
-    LTC = get_data('LTC', last_rows=5000)
+    LTC = get_data('LTC')
     print(LTC)
     LTC_transformed, MinMaxscaler = MinMax_fit_transform(LTC)
     print(LTC_transformed)

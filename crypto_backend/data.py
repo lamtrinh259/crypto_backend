@@ -24,9 +24,30 @@ def get_data(crypto, last_rows=500000):
         df_full = pd.read_csv(LTC_USD_S3URI)
         n_rows = len(df_full)
         df = pd.read_csv(LTC_USD_S3URI, skiprows=range(1, n_rows - last_rows))
-    # print(df.head())
     return df
 
+BTC_local_path = 'raw_data/btcusd.csv'
+ETH_local_path = 'raw_data/ethusd.csv'
+LTC_local_path = 'raw_data/ltcusd.csv'
+
+def get_data_locally(crypto, last_rows=500000):
+    """ Get dataset of selected crypto from cloud storage
+    500,000 data points (mins) is roughly equivalent to 1 year worth of data
+    # Params: chosen crypto by the user from the front end """
+    df = None
+    if crypto == 'BTC':
+        df_full = pd.read_csv(BTC_local_path)
+        n_rows = len(df_full)
+        df = pd.read_csv(BTC_local_path, skiprows=range(1, n_rows - last_rows))
+    elif crypto == 'ETH':
+        df_full = pd.read_csv(ETH_local_path)
+        n_rows = len(df_full)
+        df = pd.read_csv(ETH_local_path, skiprows=range(1, n_rows - last_rows))
+    elif crypto == 'LTC':
+        df_full = pd.read_csv(LTC_local_path)
+        n_rows = len(df_full)
+        df = pd.read_csv(LTC_local_path, skiprows=range(1, n_rows - last_rows))
+    return df
 
 ##Returns a dataframe with time in human-readable time as the index
 def organize_data(df):
@@ -41,6 +62,8 @@ def get_X_y(df):
 
 if __name__ == '__main__':
     # For testing
+    BTC = get_data_locally('BTC')
+    print(BTC)
     # get_data('BTC')
     # get_data('ETH')
-    get_data('LTC')
+    # get_data('LTC')
