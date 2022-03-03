@@ -24,7 +24,6 @@ def get_data(crypto, last_rows=500000):
         df_full = pd.read_csv(LTC_USD_S3URI)
         n_rows = len(df_full)
         df = pd.read_csv(LTC_USD_S3URI, skiprows=range(1, n_rows - last_rows))
-    print(df.head())
     return df
 
 
