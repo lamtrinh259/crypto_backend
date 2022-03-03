@@ -3,7 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 import pandas as pd
 import joblib
-from crypto_backend import get_data
+from crypto_backend import data
+from crypto_backend.trainer import Trainer
 
 app = FastAPI()
 
@@ -20,8 +21,8 @@ def index():
     return {"Welcome": "To the world of cryptocurrency forecasting"}
 
 @app.get("/SARIMAX_predict")
-def predict(selected_crypto):
-    """Return the next 30-day price forecast for the selected crypto
+def predict_sarimax(selected_crypto):
+    """Return the next 14-day price forecast for the selected crypto
 
     Params: user-selected cryptocurrency
     """
@@ -29,7 +30,7 @@ def predict(selected_crypto):
     # kaggle datasets download -d tencars/392-crypto-currency-pairs-at-minute-resolution/
 
     # Get data
-    df = get_data(selected_crypto)
+    df = data.get_data(selected_crypto)
 
     # Get the SARIMAX model
     SARIMAX = joblib.load('SARIMAX.joblib')
@@ -39,4 +40,10 @@ def predict(selected_crypto):
     # print(y_pred)
     return {'fare': y_pred[0]} #json_response
 
-# For testing
+@app.get("/fbprophet_predict")
+def predict_fb(selected_crypto):
+    """
+    Returns 14 day prediction
+    """
+    trainer = Trainer(selected_crypto)
+    return trainer.prophecy_predict()
