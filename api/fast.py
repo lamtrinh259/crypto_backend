@@ -7,6 +7,7 @@ from crypto_backend import data
 from crypto_backend.trainer import Trainer
 
 app = FastAPI()
+cache = {}
 
 app.add_middleware(
     CORSMiddleware,
@@ -15,6 +16,10 @@ app.add_middleware(
     allow_methods=["*"],  # Allows all methods
     allow_headers=["*"],  # Allows all headers
 )
+
+# Logic runing all the models
+
+
 
 @app.get("/")
 def index():
@@ -45,5 +50,12 @@ def predict_fb(selected_crypto):
     """
     Returns 14 day prediction
     """
+    if 'fb_prophet' in cache and selected_crypto in cache['fb_prophet']:
+        return cache['fb_prophet'][selected_crypto]
+
     trainer = Trainer(selected_crypto)
-    return trainer.prophecy_predict()
+    trainer.load_data()
+    result = trainer.prophecy_predict()
+    cache['fb_prophet'] = {selected_crypto : result}
+
+    return cache['fb_prophet'][selected_crypto]
