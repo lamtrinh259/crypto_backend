@@ -54,11 +54,16 @@ def organize_data(df):
     df.time = pd.to_datetime(df.time, unit='ms')
     df_t = df.set_index('time')
     return df_t
+<<<<<<< HEAD
 g
+=======
+
+>>>>>>> af5230cba172e4428243d5d0ad546ac8669e609a
 ##Returns a df with hourly data, requires a df where index is time.
 def hourly_data(df,step=1):
     df_sampled = df[['open','close','high','low']].resample(f'{step}H').mean()
     df_sampled['volume'] = df[['volume']].resample(f'{step}H').sum()
+    df_sampled.interpolate(inplace=True)
     return df_sampled
 
 
@@ -66,11 +71,15 @@ def hourly_data(df,step=1):
 def daily_data(df,step=1):
     df_sampled = df[['open','close','high','low']].resample(f'{step}D').mean()
     df_sampled['volume'] = df[['volume']].resample(f'{step}D').sum()
+    df_sampled.interpolate(inplace=True)
     return df_sampled
+<<<<<<< HEAD
 def get_X_y(df):
     y = df['close']
     X = df.drop('close', axis=1)
     return X, y
+=======
+>>>>>>> af5230cba172e4428243d5d0ad546ac8669e609a
 
 if __name__ == '__main__':
     # For testing
