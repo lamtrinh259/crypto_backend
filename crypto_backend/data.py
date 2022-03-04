@@ -33,6 +33,19 @@ def organize_data(df):
     df_t = df.set_index('time')
     return df_t
 
+##Returns a df with hourly data, requires a df where index is time.
+def hourly_data(df,step=1):
+    df_sampled = df[['open','close','high','low']].resample(f'{step}H').mean()
+    df_sampled['volume'] = df[['volume']].resample(f'{step}H').sum()
+    return df_sampled
+
+
+##returns a df with daily data
+def daily_data(df,step=1):
+    df_sampled = df[['open','close','high','low']].resample(f'{step}D').mean()
+    df_sampled['volume'] = df[['volume']].resample(f'{step}D').sum()
+    return df_sampled
+
 if __name__ == '__main__':
     # For testing
     # get_data('BTC')
