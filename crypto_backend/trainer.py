@@ -1,4 +1,4 @@
-from crypto_backend.data import get_data, organize_data
+from crypto_backend.data import get_data, organize_data, daily_data
 from crypto_backend.transformers import LogTransformer, DifferenceTransformer
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.pipeline import Pipeline, make_pipeline
@@ -29,9 +29,11 @@ class Trainer(object):
             ('diff', DifferenceTransformer())
         ])
 
-    def load_data(self):
+    def load_data(self, daily_on = True):
         self.X = get_data(self.currency)
         self.X = organize_data(self.X)
+        if daily_on:
+            self.X = daily_data(self.X)
 
 
     #Facebook Prophet Model that makes a 14-day prediction.
