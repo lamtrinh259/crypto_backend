@@ -55,7 +55,6 @@ def organize_data(df):
     df_t = df.set_index('time')
     return df_t
 
-<<<<<<< HEAD
 ##Returns a df with hourly data, requires a df where index is time.
 def hourly_data(df,step=1):
     df_sampled = df[['open','close','high','low']].resample(f'{step}H').mean()
@@ -68,12 +67,10 @@ def daily_data(df,step=1):
     df_sampled = df[['open','close','high','low']].resample(f'{step}D').mean()
     df_sampled['volume'] = df[['volume']].resample(f'{step}D').sum()
     return df_sampled
-=======
 def get_X_y(df):
     y = df['close']
     X = df.drop('close', axis=1)
     return X, y
->>>>>>> 461c49b0260a1bcc53f28f505227d921c32e486a
 
 if __name__ == '__main__':
     # For testing
