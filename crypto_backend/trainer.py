@@ -63,8 +63,7 @@ class Trainer(object):
         #     )
         return {'data':self.X,'predict':forecast}
 
-    #SARIMAX
-    def sarimax_predict(self,days=14):
+    def build_sarimax(self):
         #loading the Data
         self.load_data()
         #create pipeline
@@ -80,10 +79,16 @@ class Trainer(object):
                             trace=True,
                             error_action='ignore',
                             suppress_warnings=True)
+        joblib.dump(model, f'{self.currency}_sarimax_model.joblib')
+        joblib.dump(self.pipeSARIMAX, f'{self.currency}_sarimax_model_pipe.joblib')
 
-        #model assumes the input data is a daily df so it makes a 14 day prediction
+    #loads the sarimax model of the currency the make the 14 day prediction.
+    def sarimax_prediction(self,days=14):
+        #loads the pre_made_sarimax model
+        model = joblib.load(f'{self.currency}_sarimax_model.joblib')
+        #loads the pipeline for the model
+        self.pipeSARIMAX = joblib.load(f'{self.currency}_sarimax_model_pipe.joblib')
         model.predict(days)
-
 
 
 if __name__ == '__main__':
