@@ -55,7 +55,6 @@ def predict_fb(selected_crypto):
 
     trainer = Trainer(selected_crypto)
     trainer.load_data()
-    trainer.preproc_pipe_fb()
     result = trainer.prophecy_predict()
     cache['fb_prophet'] = {selected_crypto : result}
 
