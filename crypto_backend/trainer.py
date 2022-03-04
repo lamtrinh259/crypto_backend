@@ -3,8 +3,9 @@ from crypto_backend.transformers import LogTransformer, DifferenceTransformer
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.pipeline import Pipeline, make_pipeline
 from prophet import Prophet
-# import pmdarima as pm
+import pmdarima as pm
 import joblib
+import pandas as pd
 
 
 class Trainer(object):
@@ -25,8 +26,7 @@ class Trainer(object):
 
     def preproc_pipe_SA(self):
         self.pipeSARIMAX = Pipeline([
-            ('LogTrans', LogTransformer()),
-            ('diff', DifferenceTransformer())
+            ('LogTrans', LogTransformer())
         ])
 
     def load_data(self, daily_on = True):
@@ -34,6 +34,7 @@ class Trainer(object):
         self.X = organize_data(self.X)
         if daily_on:
             self.X = daily_data(self.X)
+        self.lastday = self.X.index[-1]
 
 
     #Facebook Prophet Model that makes a 14-day prediction.
@@ -68,7 +69,7 @@ class Trainer(object):
         self.load_data()
         #create pipeline
         self.preproc_pipe_SA()
-
+        print('complete loading data and building pipeline')
         data = self.X.copy()
         data_t = self.pipeSARIMAX.fit_transform(data)
         model = pm.auto_arima(data_t['close'],
@@ -88,12 +89,25 @@ class Trainer(object):
         model = joblib.load(f'{self.currency}_sarimax_model.joblib')
         #loads the pipeline for the model
         self.pipeSARIMAX = joblib.load(f'{self.currency}_sarimax_model_pipe.joblib')
-        model.predict(days)
+        #makes the n-day prediction
+        forecast = model.predict(days)
+        #generate a n-day time range for the index of the results
+        time_range = pd.date_range(start=self.lastday,periods =days+1)[1:]
+
+        #insert the forcast data into a datafame that the transformer pipeline recognize
+        d_temp = self.X.iloc[-1:].copy()
+        d_temp = d_temp.append(pd.DataFrame({'close':forecast},index=time_range))
+        d_temp.fillna(1)
+        #inverse transform the data
+        d_inv = self.pipeSARIMAX.inverse_transform(d_temp)
+
+        return d_inv['close']
 
 
 if __name__ == '__main__':
     # Test function here
     trainer = Trainer('BTC')
-    prediction = trainer.prophecy_predict(days=1)
+    prediction = trainer.build_sarimax()
+    prediction = trainer.sarimax_prediction(days=1)
     # print(trainer.X.iloc[0])
     print(prediction)
