@@ -10,6 +10,7 @@ pandas
 scikit-learn
 tensorflow
 prophet
+pmdarima
 
 # tests/linter
 black

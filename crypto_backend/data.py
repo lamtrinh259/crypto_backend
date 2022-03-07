@@ -66,6 +66,10 @@ def hourly_data(df,step=1):
     """Returns a df with hourly data, requires a df where index is time.
     Params: df with time set as index"""
     df_sampled = df[['open','close','high','low']].resample(f'{step}H').mean()
+    df_sampled = df[['open']].resample(f'{step}H').first()
+    df_sampled['close'] = df[['close']].resample(f'{step}H').last()
+    df_sampled['high'] = df[[ 'high' ]].resample(f'{step}H').max()
+    df_sampled['low']= df[[ 'low' ]].resample(f'{step}H').min()
     df_sampled['volume'] = df[['volume']].resample(f'{step}H').sum()
     df_sampled.interpolate(inplace=True)
     return df_sampled
@@ -75,7 +79,10 @@ def hourly_data(df,step=1):
 def daily_data(df,step=1):
     """Returns a df with daily data
     Params: df with time set as index"""
-    df_sampled = df[['open','close','high','low']].resample(f'{step}D').mean()
+    df_sampled = df[['open']].resample(f'{step}D').first()
+    df_sampled['close'] = df[['close']].resample(f'{step}D').last()
+    df_sampled['high'] = df[[ 'high' ]].resample(f'{step}D').max()
+    df_sampled['low']= df[[ 'low' ]].resample(f'{step}D').min()
     df_sampled['volume'] = df[['volume']].resample(f'{step}D').sum()
     df_sampled.interpolate(inplace=True)
     return df_sampled
