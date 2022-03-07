@@ -138,6 +138,7 @@ class Trainer(object):
         plot_LSTM_final_results(df_plot, self.currency)
 
 if __name__ == '__main__':
+    pass
     # Test function here
     # trainer = Trainer('BTC')
     # prediction = trainer.build_prophet()

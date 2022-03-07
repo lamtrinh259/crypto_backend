@@ -33,3 +33,4 @@ joblib
 memoized-property
 termcolor
 plotly
+datetime
