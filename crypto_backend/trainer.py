@@ -108,9 +108,9 @@ class Trainer(object):
         d_temp.fillna(1)
         #inverse transform the data
         d_inv = self.pipeSARIMAX.inverse_transform(d_temp)
-        upper_end = pd.Series(conf_int[:,0],time_range)
-        lower_end = pd.Series(conf_int[:,1],time_range)
-        return d_inv['close'], upper_end, lower_end
+        upper_end = pd.Series(conf_int[:,1],time_range)
+        lower_end = pd.Series(conf_int[:,0],time_range)
+        return {'pred': d_inv['close'], 'upper':upper_end, 'lower':lower_end}
 
 
 if __name__ == '__main__':
