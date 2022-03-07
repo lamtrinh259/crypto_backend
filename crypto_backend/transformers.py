@@ -27,23 +27,26 @@ class LogTransformer(TransformerMixin, BaseEstimator):
 
 
 #returns the running diff set of a data set
-class DifferenceTransformer(TransformerMixin,BaseEstimator):
-    def __init__(self):
-        pass
+# class DifferenceTransformer(TransformerMixin,BaseEstimator):
+'''
+the class is not currently being used so it is commented out, to maybe be used in the future.
+'''
+#     def __init__(self):
+#         pass
 
-    def fit(self,X,y=None):
-        self.init_term = X[0]
-        self.final_term = X[-1]
-        return self
+#     def fit(self,X,y=None):
+#         self.init_term = X[0]
+#         self.final_term = X[-1]
+#         return self
 
-    def transform(self,X,y=None):
-        X_diff = X[:-1]-X[1:]
-        return X_diff
+#     def transform(self,X,y=None):
+#         X_diff = X[:-1]-X[1:]
+#         return X_diff
 
-    def inverse_transform(self, X, y=None):
-        X_inversed = []
-        i = self.final_term
-        for row in X():
-            i += row
-            X_inversed.append(i)
-        return X_inversed
+#     def inverse_transform(self, X, y=None):
+#         X_inversed = []
+#         i = self.final_term
+#         for row in X():
+#             i += row
+#             X_inversed.append(i)
+#         return X_inversed
