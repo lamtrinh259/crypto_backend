@@ -7,6 +7,8 @@ def preprocessing_LSTM_data_and_get_generators(X, y):
     """ Preprocessing data with MinMax scaler and return the 3 generators, the 2 index percentiles
     for val and test sets, and the respective X & y scalers to be used with prediction.
     Params: X (features dataset) and y (target) """
+    seq_len = 30
+    batch_size = 32
     scaler_X = MinMaxScaler()
     X_scaled = scaler_X.fit_transform(X)
 
@@ -34,5 +36,6 @@ def preprocessing_LSTM_data_and_get_generators(X, y):
 
 
 if __name__ == '__main__':
+    pass
     # For testing
-    LTC = get_data('LTC')
+    # LTC = get_data('LTC')
