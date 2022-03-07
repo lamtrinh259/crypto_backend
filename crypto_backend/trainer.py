@@ -57,7 +57,7 @@ class Trainer(object):
         # prophet fitting and predicting
         fbph.fit(fb_data)
         #saving the model
-        joblib.dump(fbph, f'{self.currency}_prophet_model.joblib')
+        joblib.dump(fbph, f'{self.currency}_fb_prophet_model.joblib')
 
 
 
@@ -65,7 +65,7 @@ class Trainer(object):
     def prophecy_predict(self,days=14):
         # fbph = joblib.load('prophet.joblib')
         #load the saved the model
-        fbph = joblib.load(f'{self.currency}_prophet_model.joblib')
+        fbph = joblib.load(f'{self.currency}_fb_prophet_model.joblib')
         # making the prediction
         future= fbph.make_future_dataframe(periods=days,freq='d')
         forecast=fbph.predict(future)
@@ -111,6 +111,12 @@ class Trainer(object):
         upper_end = pd.Series(conf_int[:,1],time_range)
         lower_end = pd.Series(conf_int[:,0],time_range)
         return {'pred': d_inv['close'], 'upper':upper_end, 'lower':lower_end}
+
+    def build_LSTM(self):
+        pass
+
+    def LSTM_predict(self):
+        pass
 
 
 if __name__ == '__main__':
