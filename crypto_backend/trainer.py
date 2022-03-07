@@ -125,7 +125,7 @@ class Trainer(object):
         Return most of the params to be used in the forecast step"""
         self.X, self.y = get_LSTM_data_with_objective(self.currency, self.forecast_objective)
         train_gen, val_gen, test_gen, index_70pct, index_85pct, scaler_X, scaler_y = preprocessing_LSTM_data_and_get_generators(self.X, self.y)
-        model = init_and_compile_model()
+        model = init_and_compile_model(self.X)
         model = fit_LSTM_model(model, train_gen, val_gen)
         model.save(f'{self.currency}_LSTM_{self.forecast_objective}_model')
         return scaler_X, scaler_y, index_70pct, index_85pct, test_gen
@@ -136,9 +136,9 @@ class Trainer(object):
         model = tf.keras.models.load_model(f'{self.currency}_LSTM_{self.forecast_objective}_model')
         df_plot = LSTM_predict_with_generator(model, self.X, self.y, scaler_X, scaler_y, index_70pct, index_85pct, test_gen)
         plot_LSTM_final_results(df_plot, self.currency)
+        return df_plot
 
 if __name__ == '__main__':
-    pass
     # Test function here
     # trainer = Trainer('BTC')
     # prediction = trainer.build_prophet()
@@ -147,8 +147,11 @@ if __name__ == '__main__':
     # print(prediction['predict'])
 
     # Test LSTM
-
-    # train_gen, val_gen, test_gen, index_70pct, index_85pct, scaler_X, scaler_y = preprocessing_LSTM_data_and_get_generators(X, y)
+    trainer = Trainer('ETH')
+    scaler_X, scaler_y, index_70pct, index_85pct, test_gen = trainer.build_LSTM()
+    df_plot = trainer.LSTM_predict()
+    print(df_plot)
+    # train_gen, val_gen, test_gen, index_70pct, index_85pct, scaler_X, scaler_y = preprocessing_LSTM_data_and_get_generators(trainer.X, y)
     # model_api = init_and_compile_model()
     # model_api = fit_LSTM_model(model_api, train_gen, val_gen)
     # Save model to a folder

@@ -1,4 +1,3 @@
-from crypto_backend.data import get_data
 import numpy as np
 import pandas as pd
 
@@ -22,7 +21,8 @@ def get_features(df, row = False):
     return df_feat
 
 if __name__ == '__main__':
+    pass
     # For testing, it works!
-    ETH = get_data('ETH', last_rows=1000)
-    ETH = get_features(ETH)
-    print(ETH)
+    # ETH = get_data('ETH', last_rows=1000)
+    # ETH = get_features(ETH)
+    # print(ETH)
