@@ -51,7 +51,7 @@ def app_start():
 
 @app.get("/")
 def index():
-    return {"Welcome": "To the world of cryptocurrency forecasting"}
+    return cache
 
 @app.get("/SARIMAX_predict")
 def predict_sarimax(selected_crypto):
