@@ -59,3 +59,19 @@ def predict_fb(selected_crypto):
     cache['fb_prophet'] = {selected_crypto : result}
 
     return cache['fb_prophet'][selected_crypto]
+
+@app.get("/predict_mode")
+def predict_model(model, selected_crypto):
+    '''
+    Takes in two params model and crypto
+    Returns Original data and Prediction in Json format
+    '''
+    if model.lower() in cache and selected_crypto in cache[model.lower()]:
+        return cache[model.lower()][selected_crypto]
+
+
+    trainer = Trainer(selected_crypto)
+    model_map = {
+        'FB_PROPHET': trainer.prophecy_predict,
+        'SARIMAX': trainer.prophecy_predict
+    }
