@@ -12,9 +12,10 @@ import tensorflow as tf
 import numpy as np
 from datetime import timedelta
 
-
-def init_and_compile_model():
+def init_and_compile_model(X):
     """ Initialize and compile the LSTM model with Adam optimizer"""
+    seq_len = 30
+    n_features = X.shape[1]
     model = Sequential()
     model.add(LSTM(name='lstm_1st_layer', units=128, return_sequences=True, activation='relu', input_shape=(seq_len, n_features)))
     model.add(LSTM(name='lstm_2nd_layer', units=64, activation='tanh'))
