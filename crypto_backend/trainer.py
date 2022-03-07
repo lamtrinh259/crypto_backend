@@ -37,31 +37,39 @@ class Trainer(object):
         self.lastday = self.X.index[-1]
 
 
-    #Facebook Prophet Model that makes a 14-day prediction.
-    def prophecy_predict(self,days=14):
+    #generates a prophet model based on the coin
+    def build_prophet(self):
         # Loading Data
-        # self.load_data()
-        # Creating Pipeline
-        # self.preproc_pipe_fb()
-        # # initializing a prophet
-        # fbph = Prophet(seasonality_mode='multiplicative', interval_width=0.95 ,daily_seasonality=True)
-        # # preprocess the data and changing it to the prophet format
-        # data = self.X.copy()
-        # # fit_data = self.pipeFB.fit_transform(data)
-        # # fit_data = fit_data[['close']].reset_index()
-        # fit_data = data[['close']].reset_index()
-        # fit_data.rename(columns={'time':'ds','close':'y'},inplace = True)
+        self.load_data()
+        # initializing a prophet
+        fbph = Prophet(seasonality_mode = 'multiplicative',
+                        interval_width=0.95,
+                        changepoint_prior_scale = 0.02,
+                        yearly_seasonality = True,
+                        weekly_seasonality = True,
+                        daily_seasonality = True)
+        # preprocess the data and changing it to the prophet format
+        fbph.add_seasonality(name='monthly', period=30.5, fourier_order=5)
+        # prophet model performs better when it only sees the last year and half of data.
+        data = self.X.iloc[-500:].copy()
+        fb_data = data[['close']].reset_index()
+        fb_data.rename(columns={'time':'ds','close':'y'},inplace = True)
+        # prophet fitting and predicting
+        fbph.fit(fb_data)
+        #saving the model
+        joblib.dump(fbph, f'{self.currency}_prophet_model.joblib')
 
-        # # prophet fitting and predicting
-        # fbph.fit(fit_data)
-        fbph = joblib.load('prophet.joblib')
+
+
+    #load saved Facebook Prophet Model and makes a 14-day prediction.
+    def prophecy_predict(self,days=14):
+        # fbph = joblib.load('prophet.joblib')
+        #load the saved the model
+        fbph = joblib.load(f'{self.currency}_prophet_model.joblib')
+        # making the prediction
         future= fbph.make_future_dataframe(periods=days,freq='d')
         forecast=fbph.predict(future)
 
-        # # inverse transforming the data back to numbers
-        # forecast[['yhat','yhat_lower','yhat_upper','trend_lower','trend_upper']] = self.pipeFB.inverse_transform(
-        #     forecast[['yhat','yhat_lower','yhat_upper','trend_lower','trend_upper']]
-        #     )
         return {'data':self.X,'predict':forecast}
 
     def build_sarimax(self):
@@ -107,7 +115,7 @@ class Trainer(object):
 if __name__ == '__main__':
     # Test function here
     trainer = Trainer('BTC')
-    prediction = trainer.build_sarimax()
-    prediction = trainer.sarimax_prediction(days=1)
+    prediction = trainer.build_prophet()
+    prediction = trainer.prophecy_predict(days=1)
     # print(trainer.X.iloc[0])
-    print(prediction)
+    print(prediction['predict'])
