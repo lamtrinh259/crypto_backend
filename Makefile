@@ -158,4 +158,5 @@ pypi:
 # ----------------------------------
 
 run_api:
+	@pip install -r requirements.txt
 	uvicorn api.fast:app --reload
