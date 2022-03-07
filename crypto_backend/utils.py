@@ -74,12 +74,43 @@ def FB_grapher(fb_data,currency):
                                         open=d_data['open'],
                                         high=d_data['high'],
                                         low=d_data['low'],
-                                        close=d_data['close']),
+                                        close=d_data['close'],
+                                        name = 'Historical Data'),
                 go.Scatter(x=fb_data.ds.iloc[-14:],
                             y=fb_data.yhat.iloc[-14:],
-                            mode='lines')
+                            mode='lines',
+                            name = 'Prediction')
                 ])
     return fig1
+
+
+#take in prediction in the form returned fom sarimax_predict then graphs it together with previous data
+
+def sarimax_grapher(sarimax_data,currency):
+    data = datar.get_data(currency)
+    odata = datar.organize_data(data)
+    d_data = datar.daily_data(odata)
+    pred_x = sarimax_data.pred.index
+    fig2 = go.Figure(data=[go.Candlestick(x=d_data['time'],
+                                        open=d_data['open'],
+                                        high=d_data['high'],
+                                        low=d_data['low'],
+                                        close=d_data['close'],
+                                        name = 'Historical Data'),
+                go.Scatter(x=pred_x,
+                            y=sarimax_data.pred.close,
+                            mode='lines',
+                            name = 'Prediction'),
+                go.Scatter(
+                        x=pred_x +pred_x[::-1], # x, then x reversed
+                        y=sarimax_data.upper+sarimax_data.lower[::-1], # upper, then lower reversed
+                        fill='toself',
+                        fillcolor='rgba(0,100,80,0.2)',
+                        line=dict(color='rgba(255,255,255,0)'),
+                        hoverinfo="skip",
+                        showlegend=False)
+                ])
+    return fig2
 
 
 if __name__ == '__main__':
