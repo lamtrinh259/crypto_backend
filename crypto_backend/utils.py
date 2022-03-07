@@ -9,6 +9,8 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, LSTM, GRU
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 import tensorflow as tf
+import numpy as np
+from datetime import timedelta
 
 
 def init_and_compile_model():
@@ -27,8 +29,8 @@ def fit_LSTM_model(model, train_generator, val_generator):
     """ Fit an LSTM model with training data and validate on validation data"""
     current_path = os.getcwd() # current directory
     # Run and fit the model
-    es = tf.keras.callbacks.EarlyStopping(patience=10, monitor='val_loss')
-    cp = tf.keras.callbacks.ModelCheckpoint(f'{current_path}/checkpoints', monitor='val_loss', save_best_only=True)
+    es = EarlyStopping(patience=10, monitor='val_loss')
+    cp = ModelCheckpoint(f'{current_path}/checkpoints', monitor='val_loss', save_best_only=True)
     history = model.fit(train_generator, validation_data = val_generator, epochs=50, verbose=1, callbacks=[es, cp])
     plt.plot(history.history['loss'], label='training data')
     plt.plot(history.history['val_loss'], label='validation data')

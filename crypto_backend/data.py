@@ -1,4 +1,6 @@
 import pandas as pd
+from crypto_backend.feature_engineering import get_features
+from datetime import datetime
 
 # Either URI or URL works
 BTC_USD_S3URI = "s3://cryptocurrency-forecasting/raw_data/btcusd.csv"
@@ -96,7 +98,7 @@ def get_LSTM_data_with_objective(crypto, forecast_objective):
     # Slice data if we happen to have data older than 2020 so that we only use data from the beginning of 2020
     cutoff_date = datetime.strptime('2020-01-01', '%Y-%M-%d')
     if df.index[0] < cutoff_date:
-    df = df[cutoff_date:]
+        df = df[cutoff_date:]
     df = daily_data(df)
     df = get_features(df)
     y = df[forecast_objective][14:] # Target, exclude the first 14 days
