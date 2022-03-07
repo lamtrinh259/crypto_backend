@@ -17,7 +17,7 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-# Logic runing all the models
+# Initialize Model for Cache
 
 
 
@@ -60,7 +60,7 @@ def predict_fb(selected_crypto):
 
     return cache['fb_prophet'][selected_crypto]
 
-@app.get("/predict_mode")
+@app.get("/predict_model")
 def predict_model(model, selected_crypto):
     '''
     Takes in two params model and crypto
@@ -69,9 +69,16 @@ def predict_model(model, selected_crypto):
     if model.lower() in cache and selected_crypto in cache[model.lower()]:
         return cache[model.lower()][selected_crypto]
 
-
     trainer = Trainer(selected_crypto)
-    model_map = {
+
+    model_predict = {
         'FB_PROPHET': trainer.prophecy_predict,
-        'SARIMAX': trainer.prophecy_predict
+        'SARIMAX': trainer.sarimax_prediction,
+        'LSTM' : trainer.LSTM_predict
     }
+
+    trainer.load_data()
+    result = model_predict[model]()
+    cache[model] = {selected_crypto: result}
+
+    return cache[model][selected_crypto]
