@@ -1,5 +1,5 @@
 from crypto_backend.data import get_data, organize_data, daily_data, get_LSTM_data_with_objective
-from crypto_backend.transformers import LogTransformer, DifferenceTransformer
+from crypto_backend.transformers import LogTransformer
 from crypto_backend.preprocessing import preprocessing_LSTM_data_and_get_generators
 from crypto_backend.utils import init_and_compile_model, fit_LSTM_model, \
     LSTM_predict_with_generator, plot_LSTM_final_results
