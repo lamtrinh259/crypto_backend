@@ -1,13 +1,87 @@
-'''
-Tools to be used during the operations
-'''
+# Tools to be used during the operations
 from cgi import test
 import plotly.graph_objects as go
 import crypto_backend.data as datar
 import pandas as pd
+import matplotlib.pyplot as plt
+import os
+from keras.models import Sequential
+from keras.layers import Dense, Dropout, LSTM, GRU
+from keras.callbacks import EarlyStopping, ModelCheckpoint
+import tensorflow as tf
+import numpy as np
+from datetime import timedelta
 
-def time_series_generator(X, y):
-    pass
+
+def init_and_compile_model():
+    """ Initialize and compile the LSTM model with Adam optimizer"""
+    model = Sequential()
+    model.add(LSTM(name='lstm_1st_layer', units=128, return_sequences=True, activation='relu', input_shape=(seq_len, n_features)))
+    model.add(LSTM(name='lstm_2nd_layer', units=64, activation='tanh'))
+    model.add(Dense(units=64, name='dense_1st_layer', activation = 'LeakyReLU'))
+    model.add(Dropout(0.2, name='dropout_layer',))
+    model.add(Dense(1, name='final_layer', activation='linear'))
+    Adam_opt = tf.keras.optimizers.Adam(0.0005, beta_1=0.9, beta_2=0.999, amsgrad=False)
+    model.compile(loss='mse', optimizer = Adam_opt, metrics='mse')
+    return model
+
+def fit_LSTM_model(model, train_generator, val_generator):
+    """ Fit an LSTM model with training data and validate on validation data"""
+    current_path = os.getcwd() # current directory
+    # Run and fit the model
+    es = EarlyStopping(patience=10, monitor='val_loss')
+    cp = ModelCheckpoint(f'{current_path}/checkpoints', monitor='val_loss', save_best_only=True)
+    history = model.fit(train_generator, validation_data = val_generator, epochs=50, verbose=1, callbacks=[es, cp])
+    plt.plot(history.history['loss'], label='training data')
+    plt.plot(history.history['val_loss'], label='validation data')
+    plt.legend()
+    plt.show()
+    return model
+
+def LSTM_predict_with_generator(model, X, y, scaler_X, scaler_y, index_70pct, index_85pct, test_generator):
+    """ Pass in the model, the original X and y data, along with the 70%, 85% and the test generator in order to
+    predict the future 14 days with the LSTM model and return the entire historical and predicted data as 1 df"""
+    # Actual prices from the entire data
+    df_actual = pd.DataFrame({'actual_price':  y.values, 'date': y.index})
+
+    # Predicted prices from the given generator set
+    y_in_sample_pred = model.predict(test_generator)
+    y_in_sample_pred_prices = scaler_y.inverse_transform(y_in_sample_pred)
+    days_in_sample_pred = y[index_85pct+30:].index
+    # print(days_in_sample_pred)
+    # print(len(BTC_y_pred_prices), len(days_in_sample_pred))
+    df_pred_in_sample = pd.DataFrame({'pred_in_sample_price': y_in_sample_pred_prices.reshape(len(y_in_sample_pred_prices)), \
+                                    'date': days_in_sample_pred})
+
+    # Get the last 30 days of X, and it'll predict the forecast objective of 14 days later
+    scaled_X = scaler_X.transform(X)
+    seq_X = []
+    for i in range(14):
+        seq_X.append(scaled_X[-44+i:-14+i])
+    seq_X = np.array(seq_X)
+    # Predict the future 14 days from the last 44-day values
+    y_pred = model.predict(seq_X)
+    y_pred_prices = scaler_y.inverse_transform(y_pred)
+    # Get the values of the extra days for future predicted prices
+    days_future_pred = y[-14:].index + timedelta(14)
+    y_pred_df = pd.DataFrame({'pred_future_price': y_pred_prices.reshape(14,), 'date': days_future_pred})
+    y_pred_df.set_index('date', inplace=True)
+
+    df_plot = df_actual.merge(df_pred_in_sample, how='outer', on='date').merge(y_pred_df, how='outer', on='date')
+    df_plot['pred_future_price'].fillna(df_plot['pred_in_sample_price'], inplace=True)
+    # print('Number of missing data points in each column is', df_plot.isnull().sum())
+    df_plot.set_index('date', inplace=True)
+    return df_plot
+
+def plot_LSTM_final_results(df_plot, crypto):
+    """ Plot the final results with actual prices and predicted prices (from test generator) for given crypto """
+    plt.plot(df_plot['actual_price'], color = 'g', label = f'Actual prices of {crypto}')
+    plt.plot(df_plot['pred_future_price'], color = 'b', label = f'Predicted prices of {crypto}')
+    plt.legend(loc='best')
+    plt.xlabel('Date')
+    plt.ylabel('Price in USD')
+    plt.title(f'Actual and predicted prices of {crypto} in USD')
+    plt.show()
 
 # Memory saving function that can only be used with df
 def reduce_mem_usage(df):
