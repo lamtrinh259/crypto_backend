@@ -46,7 +46,7 @@ def app_start():
                 model_build[model]()
             print('{} Model Prediction for {}'.format(model, curr))
             result = model_predict[model]()
-            cache[model] = { curr : result }
+            cache[model.lower()] = { curr : result }
 
 
 @app.get("/")
