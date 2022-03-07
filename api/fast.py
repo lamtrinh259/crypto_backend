@@ -1,3 +1,4 @@
+from genericpath import isfile
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
@@ -18,7 +19,34 @@ app.add_middleware(
 )
 
 # Initialize Model for Cache
-
+@app.on_event("startup")
+def app_start():
+    currency = ['BTC', 'ETH', 'LTC']
+    models = [
+        'FB_PROPHET',
+        'SARIMAX',
+        # 'LSTM'
+        ]
+    for curr in currency:
+        for model in models:
+            trainer = Trainer(curr)
+            trainer.load_data()
+            model_build = {
+                'FB_PROPHET': trainer.build_prophet,
+                'SARIMAX': trainer.build_sarimax,
+                'LSTM' : trainer.build_LSTM
+            }
+            model_predict = {
+                'FB_PROPHET': trainer.prophecy_predict,
+                'SARIMAX': trainer.sarimax_prediction,
+                'LSTM' : trainer.LSTM_predict
+            }
+            if not isfile('{}_{}_model.joblib'.format(curr, model.lower())):
+                print('Building {} for {}'.format(model, curr))
+                model_build[model]()
+            print('{} Model Prediction for {}'.format(model, curr))
+            result = model_predict[model]()
+            cache[model] = { curr : result }
 
 
 @app.get("/")
