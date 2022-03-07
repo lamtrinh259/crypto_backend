@@ -92,13 +92,13 @@ class Trainer(object):
         joblib.dump(self.pipeSARIMAX, f'{self.currency}_sarimax_model_pipe.joblib')
 
     #loads the sarimax model of the currency the make the 14 day prediction.
-    def sarimax_prediction(self,days=14):
+    def sarimax_prediction(self,days=14,return_conf_int=True):
         #loads the pre_made_sarimax model
         model = joblib.load(f'{self.currency}_sarimax_model.joblib')
         #loads the pipeline for the model
         self.pipeSARIMAX = joblib.load(f'{self.currency}_sarimax_model_pipe.joblib')
         #makes the n-day prediction
-        forecast = model.predict(days)
+        forecast, conf_int = model.predict(days, return_conf_int = return_conf_int, alpha=0.05)
         #generate a n-day time range for the index of the results
         time_range = pd.date_range(start=self.lastday,periods =days+1)[1:]
 
@@ -108,8 +108,9 @@ class Trainer(object):
         d_temp.fillna(1)
         #inverse transform the data
         d_inv = self.pipeSARIMAX.inverse_transform(d_temp)
-
-        return d_inv['close']
+        upper_end = pd.Series(conf_int[:,1],time_range)
+        lower_end = pd.Series(conf_int[:,0],time_range)
+        return {'pred': d_inv['close'], 'upper':upper_end, 'lower':lower_end}
 
 
 if __name__ == '__main__':
