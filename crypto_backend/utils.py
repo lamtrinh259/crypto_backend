@@ -209,7 +209,7 @@ def all_grapher(input_data,currency):
     start_date = end_date-timedelta(days=30)
 
     fig2 = go.Figure(data=[
-                go.Candlestick(x = d_data['time'],
+                go.Candlestick(x = d_data.index,
                             open = d_data['open'],
                             high = d_data['high'],
                             low = d_data['low'],
