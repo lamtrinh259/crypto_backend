@@ -94,8 +94,8 @@ def predict_model(model, selected_crypto):
     Takes in two params model and crypto
     Returns Original data and Prediction in Json format
     '''
-    if model.lower() in cache and selected_crypto in cache[model.lower()]:
-        return cache[model.lower()][selected_crypto]
+    if (model in cache) and (selected_crypto in cache[model]):
+        return cache[model][selected_crypto]
 
     trainer = Trainer(selected_crypto)
 
