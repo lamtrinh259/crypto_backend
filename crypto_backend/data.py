@@ -73,7 +73,7 @@ def get_data_from_api(time='1D',currency='BTCUSD',section='hist',frames=10_000,s
 
 def organize_data(df):
     """Returns a dataframe with time in human-readable time as the index"""
-    df.time = pd.to_datetime(df.time, unit='ms')
+    df.time = pd.to_datetime(df.time, format='%d/%m/%Y')
     df_t = df.set_index('time')
     return df_t
 
