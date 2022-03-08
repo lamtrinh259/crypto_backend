@@ -69,8 +69,6 @@ class Trainer(object):
         #saving the model
         joblib.dump(fbph, f'models/{self.currency}_fb_prophet_model.joblib')
 
-
-
     #load saved Facebook Prophet Model and makes a 14-day prediction.
     def prophecy_predict(self,days=14):
         # fbph = joblib.load('prophet.joblib')

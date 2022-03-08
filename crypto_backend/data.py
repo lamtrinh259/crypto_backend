@@ -53,7 +53,7 @@ def get_data_locally(crypto):
         print('No such crypto pair or file exists, please check')
     return df
 
-def get_data_from_api(time='1m',currency='BTCUSD',section='hist',frames=10_000,save_locally = True):
+def get_data_from_api(time='1D',currency='BTCUSD',section='hist',frames=10_000,save_locally = True):
     BASE_URI = "https://api-pub.bitfinex.com"
     '''
     getting the data for the currency in the time difference for the number of frames,
@@ -64,6 +64,7 @@ def get_data_from_api(time='1m',currency='BTCUSD',section='hist',frames=10_000,s
     response = requests.get(search_url).json()
     if len(response)==frames:
         df = pd.DataFrame(response[::-1]).set_axis(['time','open','close','high','low','volume'],axis='columns')
+        df.time = pd.to_datetime(df.time,unit = 'ms')
         if save_locally:
             df.to_csv(f'local_data/{currency}_{time}_{str(datetime.now().date())}.csv')
         return df
@@ -119,9 +120,9 @@ def get_LSTM_data_with_objective(crypto, forecast_objective):
 
 if __name__ == '__main__':
     # For testing
-    # get_data_from_api(time='1D',frames=797)
+    print(get_data_from_api(time='1D',frames=797,save_locally=False))
     # get_data_from_api(time='1D',currency = 'ETHUSD',frames=797)
     # get_data_from_api(time='1D',currency = 'LTCUSD',frames=797)
-    get_data('BTC')
+    # get_data('BTC')
     # get_data('ETH')
     # get_data('LTC')
