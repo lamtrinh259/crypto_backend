@@ -69,8 +69,6 @@ class Trainer(object):
         #saving the model
         joblib.dump(fbph, f'models/{self.currency}_fb_prophet_model.joblib')
 
-
-
     #load saved Facebook Prophet Model and makes a 14-day prediction.
     def prophecy_predict(self,days=14):
         # fbph = joblib.load('prophet.joblib')
@@ -144,7 +142,8 @@ class Trainer(object):
     def LSTM_predict(self, objective='close'):
         """Get the prediction and plot final results with LSTM"""
         self.forecast_objective = objective
-        scaler_X, scaler_y, index_70pct, index_85pct, test_gen = self.build_LSTM()
+        train_gen, val_gen, test_gen, index_70pct, index_85pct, scaler_X, scaler_y = preprocessing_LSTM_data_and_get_generators(self.X, self.y)
+        # scaler_X, scaler_y, index_70pct, index_85pct, test_gen = self.build_LSTM()
         model = tf.keras.models.load_model(f'models/{self.currency}_LSTM_{self.forecast_objective}_model')
         df_plot = LSTM_predict_with_generator(model, self.X, self.y, scaler_X, scaler_y, index_70pct, index_85pct, test_gen)
         # plot_LSTM_final_results(df_plot, self.currency)

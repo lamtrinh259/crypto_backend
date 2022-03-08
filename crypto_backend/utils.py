@@ -33,10 +33,10 @@ def fit_LSTM_model(model, train_generator, val_generator):
     es = EarlyStopping(patience=10, monitor='val_loss')
     cp = ModelCheckpoint(f'{current_path}/checkpoints', monitor='val_loss', save_best_only=True)
     history = model.fit(train_generator, validation_data = val_generator, epochs=50, verbose=1, callbacks=[es, cp])
-    plt.plot(history.history['loss'], label='training data')
-    plt.plot(history.history['val_loss'], label='validation data')
-    plt.legend()
-    plt.show()
+    # plt.plot(history.history['loss'], label='training data')
+    # plt.plot(history.history['val_loss'], label='validation data')
+    # plt.legend()
+    # plt.show()
     return model
 
 def LSTM_predict_with_generator(model, X, y, scaler_X, scaler_y, index_70pct, index_85pct, test_generator):
@@ -158,7 +158,7 @@ def FB_grapher(fb_data,currency):
                             y=fb_data['pred'].yhat.iloc[-14:],
                             mode='lines',
                             name = 'Prediction'),
-                go.Scatter( x=pred_x +pred_x[::-1], # x, then x reversed
+                go.Scatter( x=pred_x , # x, then x reversed
                             y=fb_data['pred'].yhat_upper[-14:]+fb_data['pred'].yhat_lower[-14::-1], # upper, then lower reversed
                             fill='toself',
                             fillcolor='rgba(0,100,80,0.2)',
@@ -199,30 +199,37 @@ def sarimax_grapher(sarimax_data,currency):
     return fig2
 
 def all_grapher(input_data,currency):
-    data = datar.get_data(currency)
-    odata = datar.organize_data(data)
-    d_data = datar.daily_data(odata)
-    pred_x = input_data.index[-14:]
+    # data = datar.get_data(currency)
+    # odata = datar.organize_data(data)
+    # d_data = datar.daily_data(odata)
+    d_data = input_data.data
+    pred_x = input_data.pred.index[-14:]
 
     fig2 = go.Figure(data=[
-                go.Candlestick(x=d_data.index,
-                            open=d_data['open'],
-                            high=d_data['high'],
-                            low=d_data['low'],
-                            close=d_data['close'],
+                go.Candlestick(x = d_data['time'],
+                            open = d_data['open'],
+                            high = d_data['high'],
+                            low = d_data['low'],
+                            close = d_data['close'],
                             name = 'Historical Data'),
-                go.Scatter( x=pred_x,
-                            y=input_data['Predicted Price'],
-                            mode='lines',
+                go.Scatter( x = pred_x,
+                            y = input_data.pred['Predicted Price'],
+                            mode = 'lines',
                             name = 'Prediction'),
-                go.Scatter( x=pred_x +pred_x[::-1], # x, then x reversed
-                            y=input_data['MAX Price']+input_data['MIN Price'][::-1], # upper, then lower reversed
-                            fill='toself',
-                            fillcolor='rgba(0,100,80,0.2)',
-                            line=dict(color='rgba(255,255,255,0)'),
+                go.Scatter( x=pred_x, # +pred_x[::-1], # x, then x reversed,
+                            y=input_data.pred['MAX Price'] , # upper, then lower reversed
+                            mode = 'lines',
+                            line=dict(width=0),
                             hoverinfo="skip",
-                            showlegend=False)
-                ])
+                            showlegend=False),
+                go.Scatter( x=pred_x, # +pred_x[::-1], # x, then x reversed,
+                            y=input_data.pred['MIN Price'], # upper, then lower reversed
+                            fill='tonexty',
+                            mode = 'lines',
+                            line=dict(width=0),
+                            fillcolor='rgba(68, 68, 68, 0.3)',
+                            hoverinfo="skip",
+                            showlegend=False)])
     return fig2
 
 
