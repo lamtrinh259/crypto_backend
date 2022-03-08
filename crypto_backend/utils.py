@@ -187,6 +187,12 @@ def sarimax_grapher(sarimax_data,currency):
                 ])
     return fig2
 
+def make_fb_table(fb_data):
+
+    df = pd.DataFrame(fb_data[''])
+
+
+
 
 if __name__ == '__main__':
     # Test function here
