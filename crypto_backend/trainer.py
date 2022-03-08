@@ -122,7 +122,7 @@ class Trainer(object):
         upper_end = pd.Series(conf_int[:,1],time_range)
         lower_end = pd.Series(conf_int[:,0],time_range)
         sarimax_data = {'data':self.X,'pred': d_inv['close'], 'upper':upper_end, 'lower':lower_end}
-        results = tables.make_sarimax_table(sarimax_data).iloc[-14:]
+        results = tables.make_sarimax_table(sarimax_data)
         return results
 
     def build_LSTM(self, objective='close'):
@@ -155,13 +155,15 @@ class Trainer(object):
         results = pd.concat([pred_close,pred_high,pred_low],axis=1)
         results = results.sort_values(by=results.index[0],axis=1).set_axis(['MIN Price',
                                                   'Predicted Price',
-                                                  'MAX price'],
+                                                  'MAX Price'],
                                                  axis = 'columns')
+
         # reload the date to get the X before the change by build_lstm
         self.load_data()
-        lstm_data = {'data':self.X, 'pred':results}
-        results = tables.make_LSTM_table(lstm_data).iloc[-14:]
-        return results
+        results = results.astype(float)
+        lstm_data = {'data':self.X, 'predict':results}
+        # results = tables.make_LSTM_table(lstm_data)
+        return lstm_data
 
 
 if __name__ == '__main__':
