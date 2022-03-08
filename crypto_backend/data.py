@@ -64,7 +64,7 @@ def get_data_from_api(time='1D',currency='BTCUSD',section='hist',frames=10_000,s
     response = requests.get(search_url).json()
     if len(response)==frames:
         df = pd.DataFrame(response[::-1]).set_axis(['time','open','close','high','low','volume'],axis='columns')
-        df.time = pd.to_datetime(df.time)
+        df.time = pd.to_datetime(df.time,unit = 'ms')
         if save_locally:
             df.to_csv(f'local_data/{currency}_{time}_{str(datetime.now().date())}.csv')
         return df
