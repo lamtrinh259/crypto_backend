@@ -17,7 +17,10 @@ BUCKET_FOLDER=data
 # BUCKET_FILE_NAME=another_file_name_if_I_so_desire.csv
 BUCKET_FILE_NAME=$(shell basename ${LOCAL_PATH})
 
-REGION=europe-west1
+# REGION=europe-west1
+# REGION_UR=eu.gcr.io
+REGION=asia-northeast3
+REGION_UR=asia.gcr.io
 
 set_project:
 	-@gcloud config set project ${PROJECT_ID}
@@ -92,24 +95,24 @@ gcp_submit_training:
 
 
 docker_build:
-	docker build -t eu.gcr.io/${PROJECT_ID}/${DOCKER_IMAGE_NAME} .
+	docker build -t ${REGION_UR}/${PROJECT_ID}/${DOCKER_IMAGE_NAME} .
 
 docker_local:
-	docker run -e PORT=8000 -p 8000:8000 eu.gcr.io/${PROJECT_ID}/${DOCKER_IMAGE_NAME}
+	docker run -e PORT=8000 -p 8000:8000 ${REGION_UR}/${PROJECT_ID}/${DOCKER_IMAGE_NAME}
 
 gcloud_push:
-	docker push eu.gcr.io/${PROJECT_ID}/${DOCKER_IMAGE_NAME}
+	docker push ${REGION_UR}/${PROJECT_ID}/${DOCKER_IMAGE_NAME}
 
 gcloud_run:
 	gcloud run deploy \
-		--image eu.gcr.io/${PROJECT_ID}/${DOCKER_IMAGE_NAME} \
+		--image ${REGION_UR}/${PROJECT_ID}/${DOCKER_IMAGE_NAME} \
 		--memory 4Gi \
 		--platform managed \
 		--region ${REGION}
 
 gcloud_deploy:
 	gcloud run deploy \
-    --image eu.gcr.io/${PROJECT_ID}/${DOCKER_IMAGE_NAME} \
+    --image ${REGION_UR}/${PROJECT_ID}/${DOCKER_IMAGE_NAME} \
 		--memory 4Gi \
     --platform managed \
     --region ${REGION} \
