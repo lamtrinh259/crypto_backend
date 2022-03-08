@@ -28,8 +28,8 @@ def app_start():
         ]
 
     models = [
-        'FB_PROPHET',
-        'SARIMAX',
+        # 'FB_PROPHET',
+        # 'SARIMAX',
         'LSTM'
         ]
     for curr in currency:
