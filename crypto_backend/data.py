@@ -1,6 +1,8 @@
 import pandas as pd
 from crypto_backend.feature_engineering import get_features
 from datetime import datetime
+import urllib.parse
+import requests
 
 # Either URI or URL works
 BTC_USD_S3URI = "s3://cryptocurrency-forecasting/raw_data/btcusd.csv"
@@ -56,6 +58,22 @@ def get_data_locally(crypto, last_rows=1_000_000):
         print('No such crypto pair or file exists, please check')
     return df
 
+def get_data_from_api(time='1m',currency='BTCUSD',section='hist',frames=10_000,save_locally = True):
+    BASE_URI = "https://api-pub.bitfinex.com"
+    '''
+    getting the data for the currency in the time difference for the number of frames,
+    max number of frames is 10_000
+    default setting is returning the last 10000 minutes for the btcusd set
+    '''
+    search_url = urllib.parse.urljoin(BASE_URI,f'/v2/candles/trade:{time}:t{currency}/{section}?limit={frames}')
+    response = requests.get(search_url).json()
+    if len(response)==frames:
+        df = pd.DataFrame(response[::-1]).set_axis(['time','open','close','high','low','volume'],axis='columns')
+        if save_locally:
+            df.to_csv(f'local_data/{currency}_{time}_{str(datetime.now().date())}.csv')
+        return df
+    return None
+
 
 def organize_data(df):
     """Returns a dataframe with time in human-readable time as the index"""
@@ -107,8 +125,9 @@ def get_LSTM_data_with_objective(crypto, forecast_objective):
 
 if __name__ == '__main__':
     # For testing
-    BTC = get_data_locally('BTC')
-    print(BTC)
+    get_data_from_api(time='1D',frames=797)
+    get_data_from_api(time='1D',currency = 'ETHUSD',frames=797)
+    get_data_from_api(time='1D',currency = 'LTCUSD',frames=797)
     # get_data('BTC')
     # get_data('ETH')
     # get_data('LTC')
