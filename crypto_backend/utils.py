@@ -147,6 +147,7 @@ def FB_grapher(fb_data,currency):
     # d_data = datar.daily_data(odata)
     d_data = fb_data['data'].reset_index()
     pred_x = fb_data['pred'].ds.iloc[-14:]
+
     fig1 = go.Figure(data=[
                 go.Candlestick(x=d_data['time'],
                             open=d_data['open'],
@@ -204,6 +205,8 @@ def all_grapher(input_data,currency):
     # d_data = datar.daily_data(odata)
     d_data = input_data.data
     pred_x = input_data.pred.index[-14:]
+    end_date = input_data.pred.index[-1]
+    start_date = end_date-timedelta(days=30)
 
     fig2 = go.Figure(data=[
                 go.Candlestick(x = d_data['time'],
@@ -230,6 +233,7 @@ def all_grapher(input_data,currency):
                             fillcolor='rgba(68, 68, 68, 0.3)',
                             hoverinfo="skip",
                             showlegend=False)])
+    fig2.update_xaxes(type="date", range=[start_date, end_date])
     return fig2
 
 
