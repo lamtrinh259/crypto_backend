@@ -62,10 +62,14 @@ class DataTester(unittest.TestCase):
         cls.assertEqual(len(cls.X),len(cls.y))
 
     def test_getapidata_shape(cls):
-        data = data_man.get_data_from_api(frames=100)
+        #test the shape of the returned data
+        data = data_man.get_data_from_api(frames=100,save_locally=False)
         cls.assertEqual(data.shape, (100,6))
 
-
+    def test_getapidata_values(cls):
+        #test for nan values in returned data
+        data = data_man.get_data_from_api(frames=100,save_locally=False)
+        cls.assertEqual(data.isna().sum(), 0)
 
 if __name__ == '__main__':
     tester = DataTester()
