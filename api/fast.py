@@ -23,14 +23,14 @@ app.add_middleware(
 def app_start():
     currency = [
         'BTC',
-        # 'ETH',
-        # 'LTC'
+        'ETH',
+        'LTC'
         ]
 
     models = [
         'FB_PROPHET',
         'SARIMAX',
-        # 'LSTM'
+        'LSTM'
         ]
     for curr in currency:
         for model in models:
