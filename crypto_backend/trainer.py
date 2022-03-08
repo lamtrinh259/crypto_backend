@@ -79,8 +79,7 @@ class Trainer(object):
         forecast=fbph.predict(future)
         prediction = forecast.iloc[-14:]
         fb_data= {'data':self.X,'predict':prediction}
-        results = tables.make_fb_table(fb_data).iloc[-14:]
-        return results
+        return tables.make_fb_table(fb_data)
 
 
     def build_sarimax(self):
@@ -148,7 +147,7 @@ class Trainer(object):
         # scaler_X, scaler_y, index_70pct, index_85pct, test_gen = self.build_LSTM()
         model = tf.keras.models.load_model(f'models/{self.currency}_LSTM_{self.forecast_objective}_model')
         df_plot = LSTM_predict_with_generator(model, self.X, self.y, scaler_X, scaler_y, index_70pct, index_85pct, test_gen)
-        plot_LSTM_final_results(df_plot, self.currency)
+        # plot_LSTM_final_results(df_plot, self.currency)
         return df_plot
 
     def LSTM_multi_predict(self):

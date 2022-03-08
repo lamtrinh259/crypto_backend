@@ -17,7 +17,10 @@ BUCKET_FOLDER=data
 # BUCKET_FILE_NAME=another_file_name_if_I_so_desire.csv
 BUCKET_FILE_NAME=$(shell basename ${LOCAL_PATH})
 
-REGION=europe-west1
+# REGION=europe-west1
+# REGION_UR=eu.gcr.io
+REGION=asia-northeast3
+REGION_UR=asia.gcr.io
 
 set_project:
 	-@gcloud config set project ${PROJECT_ID}
@@ -26,7 +29,7 @@ create_bucket:
 	-@gsutil mb -l ${REGION} -p ${PROJECT_ID} gs://${BUCKET_NAME}
 
 upload_data:
-	# -@gsutil cp train_1k.csv gs://wagon-ml-my-bucket-name/data/train_1k.csv
+# -@gsutil cp train_1k.csv gs://wagon-ml-my-bucket-name/data/train_1k.csv
 	-@gsutil cp ${LOCAL_PATH} gs://${BUCKET_NAME}/${BUCKET_FOLDER}/${BUCKET_FILE_NAME}
 
 ### GCP configuration - - - - - - - - - - - - - - - - - - -
@@ -75,7 +78,7 @@ JOB_NAME=crypto_prediction_$(shell date +'%Y%m%d_%H%M%S')
 
 #### GCS config - - - - - - - - - - - - - - - - - - - - - -
 DOCKER_IMAGE_NAME=crypto_predict
-GOOGLE_APPLICATION_CREDENTIALS =
+GOOGLE_APPLICATION_CREDENTIALS = /home/tjp1992/code/tjp1992/gcp/wagon-bootcamp-337804-fcbb82b2e82e.json
 
 run_locally:
 	@python -m ${PACKAGE_NAME}.${FILENAME}
@@ -91,12 +94,29 @@ gcp_submit_training:
 		--stream-logs
 
 
+docker_build:
+	docker build -t ${REGION_UR}/${PROJECT_ID}/${DOCKER_IMAGE_NAME} .
+
+docker_local:
+	docker run -e PORT=8000 -p 8000:8000 ${REGION_UR}/${PROJECT_ID}/${DOCKER_IMAGE_NAME}
+
+gcloud_push:
+	docker push ${REGION_UR}/${PROJECT_ID}/${DOCKER_IMAGE_NAME}
+
+gcloud_run:
+	gcloud run deploy \
+		--image ${REGION_UR}/${PROJECT_ID}/${DOCKER_IMAGE_NAME} \
+		--memory 4Gi \
+		--platform managed \
+		--region ${REGION}
+
 gcloud_deploy:
 	gcloud run deploy \
-    --image eu.gcr.io/$PROJECT_ID/$DOCKER_IMAGE_NAME \
+    --image ${REGION_UR}/${PROJECT_ID}/${DOCKER_IMAGE_NAME} \
+		--memory 4Gi \
     --platform managed \
-    --region europe-west1 \
-    --set-env-vars "$GOOGLE_APPLICATION_CREDENTIALS=/credentials.json"
+    --region ${REGION} \
+    --set-env-vars "GOOGLE_APPLICATION_CREDENTIALS=/credentials.json"
 # ----------------------------------
 #          INSTALL & TEST
 # ----------------------------------
