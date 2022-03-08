@@ -33,10 +33,10 @@ def fit_LSTM_model(model, train_generator, val_generator):
     es = EarlyStopping(patience=10, monitor='val_loss')
     cp = ModelCheckpoint(f'{current_path}/checkpoints', monitor='val_loss', save_best_only=True)
     history = model.fit(train_generator, validation_data = val_generator, epochs=50, verbose=1, callbacks=[es, cp])
-    plt.plot(history.history['loss'], label='training data')
-    plt.plot(history.history['val_loss'], label='validation data')
-    plt.legend()
-    plt.show()
+    # plt.plot(history.history['loss'], label='training data')
+    # plt.plot(history.history['val_loss'], label='validation data')
+    # plt.legend()
+    # plt.show()
     return model
 
 def LSTM_predict_with_generator(model, X, y, scaler_X, scaler_y, index_70pct, index_85pct, test_generator):
