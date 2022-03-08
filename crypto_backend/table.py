@@ -29,12 +29,12 @@ def make_sarimax_table(sarimax_data):
     #                                 'low': 'MIN Price',
     #                                 'high': 'MAX Price'})
     #grabbing the prediction data
-    df = pd.DataFrame({'Predicted Price':sarimax_data['pred'],
+    sarimax_data['predict'] = pd.DataFrame({'Predicted Price':sarimax_data['pred'],
                        'MIN Price':sarimax_data['lower'],
                        'MAX Price':sarimax_data['upper']})
     #merge the two table
     # results = pd.concat([prev_df,df])
-    return df
+    return sarimax_data
 
 def make_LSTM_table(lstm_data):
     # writes a table to be displayed on streamlit
@@ -44,10 +44,10 @@ def make_LSTM_table(lstm_data):
     #                                 'low': 'MIN Price',
     #                                 'high': 'MAX Price'})
     #grabbing the prediction data
-    df = lstm_data['pred']
+    lstm_data['predict'] = lstm_data['pred']
     #merge the two table
     # results = pd.concat([prev_df,df])
-    return df
+    return lstm_data
 
 
 if __name__ == '__main__':

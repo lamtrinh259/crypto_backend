@@ -23,13 +23,13 @@ app.add_middleware(
 def app_start():
     currency = [
         'BTC',
-        # 'ETH',
-        # 'LTC'
+        'ETH',
+        'LTC'
         ]
 
     models = [
-        # 'FB_PROPHET',
-        # 'SARIMAX',
+        'FB_PROPHET',
+        'SARIMAX',
         'LSTM'
         ]
     for curr in currency:
@@ -105,7 +105,7 @@ def predict_model(model, selected_crypto):
     model_predict = {
         'FB_PROPHET': trainer.prophecy_predict,
         'SARIMAX': trainer.sarimax_prediction,
-        'LSTM' : trainer.LSTM_predict
+        'LSTM' : trainer.LSTM_multi_predict
     }
 
     trainer.load_data()
