@@ -46,7 +46,7 @@ def app_start():
                 model_build[model]()
             print('{} Model Prediction for {}'.format(model, curr))
             result = model_predict[model]()
-            cache[model.lower()] = { curr : result }
+            cache[model] = { curr : result }
 
 
 @app.get("/")
@@ -78,15 +78,15 @@ def predict_fb(selected_crypto):
     """
     Returns 14 day prediction
     """
-    if 'fb_prophet' in cache and selected_crypto in cache['fb_prophet']:
-        return cache['fb_prophet'][selected_crypto]
+    if 'FB_PROPHET' in cache and selected_crypto in cache['FB_PROPHET']:
+        return cache['FB_PROPHET'][selected_crypto]
 
     trainer = Trainer(selected_crypto)
     trainer.load_data()
     result = trainer.prophecy_predict()
-    cache['fb_prophet'] = {selected_crypto : result}
+    cache['FB_PROPHET'] = {selected_crypto : result}
 
-    return cache['fb_prophet'][selected_crypto]
+    return cache['FB_PROPHET'][selected_crypto]
 
 @app.get("/predict_model")
 def predict_model(model, selected_crypto):
