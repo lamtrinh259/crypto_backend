@@ -142,19 +142,29 @@ def train_test_generator(X,test_sets=20,train_size=3*30*24*60,test_size=30*24*60
 
 #take in prediction take from facebook then graphs it together with previous data
 def FB_grapher(fb_data,currency):
-    data = datar.get_data(currency)
-    odata = datar.organize_data(data)
-    d_data = datar.daily_data(odata)
-    fig1 = go.Figure(data=[go.Candlestick(x=d_data['time'],
-                                        open=d_data['open'],
-                                        high=d_data['high'],
-                                        low=d_data['low'],
-                                        close=d_data['close'],
-                                        name = 'Historical Data'),
-                go.Scatter(x=fb_data.ds.iloc[-14:],
-                            y=fb_data.yhat.iloc[-14:],
+    # data = datar.get_data(currency)
+    # odata = datar.organize_data(data)
+    # d_data = datar.daily_data(odata)
+    d_data = fb_data['data'].reset_index()
+    pred_x = fb_data['pred'].ds.iloc[-14:]
+    fig1 = go.Figure(data=[
+                go.Candlestick(x=d_data['time'],
+                            open=d_data['open'],
+                            high=d_data['high'],
+                            low=d_data['low'],
+                            close=d_data['close'],
+                            name = 'Historical Data'),
+                go.Scatter(x=pred_x,
+                            y=fb_data['pred'].yhat.iloc[-14:],
                             mode='lines',
-                            name = 'Prediction')
+                            name = 'Prediction'),
+                go.Scatter( x=pred_x +pred_x[::-1], # x, then x reversed
+                            y=fb_data['pred'].yhat_upper[-14:]+fb_data['pred'].yhat_lower[-14::-1], # upper, then lower reversed
+                            fill='toself',
+                            fillcolor='rgba(0,100,80,0.2)',
+                            line=dict(color='rgba(255,255,255,0)'),
+                            hoverinfo="skip",
+                            showlegend=False)
                 ])
     return fig1
 
@@ -162,37 +172,58 @@ def FB_grapher(fb_data,currency):
 #take in prediction in the form returned fom sarimax_predict then graphs it together with previous data
 
 def sarimax_grapher(sarimax_data,currency):
-    data = datar.get_data(currency)
-    odata = datar.organize_data(data)
-    d_data = datar.daily_data(odata)
+    # data = datar.get_data(currency)
+    # odata = datar.organize_data(data)
+    # d_data = datar.daily_data(odata)
+    d_data = sarimax_data['data'].reset_index()
     pred_x = sarimax_data.pred.index
-    fig2 = go.Figure(data=[go.Candlestick(x=d_data['time'],
-                                        open=d_data['open'],
-                                        high=d_data['high'],
-                                        low=d_data['low'],
-                                        close=d_data['close'],
-                                        name = 'Historical Data'),
-                go.Scatter(x=pred_x,
+    fig2 = go.Figure(data=[
+                go.Candlestick(x=d_data['time'],
+                            open=d_data['open'],
+                            high=d_data['high'],
+                            low=d_data['low'],
+                            close=d_data['close'],
+                            name = 'Historical Data'),
+                go.Scatter( x=pred_x,
                             y=sarimax_data.pred.close,
                             mode='lines',
                             name = 'Prediction'),
-                go.Scatter(
-                        x=pred_x +pred_x[::-1], # x, then x reversed
-                        y=sarimax_data.upper+sarimax_data.lower[::-1], # upper, then lower reversed
-                        fill='toself',
-                        fillcolor='rgba(0,100,80,0.2)',
-                        line=dict(color='rgba(255,255,255,0)'),
-                        hoverinfo="skip",
-                        showlegend=False)
+                go.Scatter( x=pred_x +pred_x[::-1], # x, then x reversed
+                            y=sarimax_data.upper+sarimax_data.lower[::-1], # upper, then lower reversed
+                            fill='toself',
+                            fillcolor='rgba(0,100,80,0.2)',
+                            line=dict(color='rgba(255,255,255,0)'),
+                            hoverinfo="skip",
+                            showlegend=False)
                 ])
     return fig2
 
-def make_fb_table(fb_data):
-    # writes a table to be displayed on streamlit
-    df = pd.DataFrame(fb_data[''])
+def all_grapher(input_data,currency):
+    data = datar.get_data(currency)
+    odata = datar.organize_data(data)
+    d_data = datar.daily_data(odata)
+    pred_x = input_data.index[-14:]
 
-
-
+    fig2 = go.Figure(data=[
+                go.Candlestick(x=d_data.index,
+                            open=d_data['open'],
+                            high=d_data['high'],
+                            low=d_data['low'],
+                            close=d_data['close'],
+                            name = 'Historical Data'),
+                go.Scatter( x=pred_x,
+                            y=input_data['Predicted Price'],
+                            mode='lines',
+                            name = 'Prediction'),
+                go.Scatter( x=pred_x +pred_x[::-1], # x, then x reversed
+                            y=input_data['MAX Price']+input_data['MIN Price'][::-1], # upper, then lower reversed
+                            fill='toself',
+                            fillcolor='rgba(0,100,80,0.2)',
+                            line=dict(color='rgba(255,255,255,0)'),
+                            hoverinfo="skip",
+                            showlegend=False)
+                ])
+    return fig2
 
 
 if __name__ == '__main__':

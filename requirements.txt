@@ -34,3 +34,5 @@ memoized-property
 termcolor
 plotly
 datetime
+urllib3
+requests

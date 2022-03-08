@@ -52,8 +52,6 @@ class DataTester(unittest.TestCase):
         #check if there are any nan values in the data
         cls.assertEqual(cls.hourly_data.isna().sum().sum(),0)
 
-    # def test_X_y(cls):
-    #
     def test_x_y(cls):
         cls.assertEqual(type(cls.y),pd.Series)
         cols = ['open','high','low','volume',"close"].sort()
@@ -61,9 +59,18 @@ class DataTester(unittest.TestCase):
                         cols)
         cls.assertEqual(len(cls.X),len(cls.y))
 
+    def test_getapidata_shape(cls):
+        #test the shape of the returned data
+        data = data_man.get_data_from_api(frames=100,save_locally=False)
+        cls.assertEqual(data.shape, (100,6))
+
+    def test_getapidata_values(cls):
+        #test for nan values in returned data
+        data = data_man.get_data_from_api(frames=100,save_locally=False)
+        cls.assertEqual(data.isna().sum().sum(), 0)
 
 
 if __name__ == '__main__':
     tester = DataTester()
-    tester.test_getdatacolumns()
-    tester.test_getdatatype()
+    # tester.test_getdatacolumns()
+    tester.test_getapidata_values()
