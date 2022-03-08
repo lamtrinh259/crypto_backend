@@ -1,7 +1,6 @@
 import pandas as pd
 from crypto_backend.feature_engineering import get_features
 from datetime import datetime
-import sys
 import urllib.parse
 import requests
 
