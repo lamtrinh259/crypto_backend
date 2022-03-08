@@ -110,7 +110,7 @@ black:
 	@black scripts/* crypto_backend/*.py
 
 test:
-	@coverage run -m pytest tests/*test.py
+#	@coverage run -m pytest tests/*test.py
 	@coverage report -i -m --omit="${VIRTUAL_ENV}/lib/python*" --omit="/tmp/*"
 
 ftest:
