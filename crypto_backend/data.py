@@ -5,8 +5,8 @@ from datetime import datetime
 # Either URI or URL works
 BTC_USD_S3URI = "s3://cryptocurrency-forecasting/raw_data/btcusd.csv"
 BTC_USD_URL = "https://cryptocurrency-forecasting.s3.ap-northeast-1.amazonaws.com/raw_data/btcusd.csv"
-ETH_USD_S3URI = "s3://cryptocurrency-forecasting/raw_data/etcusd.csv"
-ETH_USD_URL = "https://cryptocurrency-forecasting.s3.ap-northeast-1.amazonaws.com/raw_data/etcusd.csv"
+ETH_USD_S3URI = "s3://cryptocurrency-forecasting/raw_data/ethusd.csv"
+ETH_USD_URL = "https://cryptocurrency-forecasting.s3.ap-northeast-1.amazonaws.com/raw_data/ethusd.csv"
 LTC_USD_S3URI = "s3://cryptocurrency-forecasting/raw_data/ltcusd.csv"
 LTC_USD_URL = "https://cryptocurrency-forecasting.s3.ap-northeast-1.amazonaws.com/raw_data/ltcusd.csv"
 
