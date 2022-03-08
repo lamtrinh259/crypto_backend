@@ -187,12 +187,6 @@ def sarimax_grapher(sarimax_data,currency):
                 ])
     return fig2
 
-def make_fb_table(fb_data):
-    # writes a table to be displayed on streamlit
-    df = pd.DataFrame(fb_data[''])
-
-
-
 
 
 if __name__ == '__main__':

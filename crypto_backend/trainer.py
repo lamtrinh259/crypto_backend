@@ -2,7 +2,7 @@ from crypto_backend.data import get_data, organize_data, daily_data, get_LSTM_da
 from crypto_backend.transformers import LogTransformer
 from crypto_backend.preprocessing import preprocessing_LSTM_data_and_get_generators
 from crypto_backend.utils import init_and_compile_model, fit_LSTM_model, \
-    LSTM_predict_with_generator, plot_LSTM_final_results
+     LSTM_predict_with_generator, plot_LSTM_final_results
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.pipeline import Pipeline, make_pipeline
 from prophet import Prophet
@@ -121,25 +121,42 @@ class Trainer(object):
         conf_int = np.exp(conf_int)
         upper_end = pd.Series(conf_int[:,1],time_range)
         lower_end = pd.Series(conf_int[:,0],time_range)
-        return {'pred': d_inv['close'], 'upper':upper_end, 'lower':lower_end}
+        return {'data':self.X,'pred': d_inv['close'], 'upper':upper_end, 'lower':lower_end}
 
-    def build_LSTM(self):
+    def build_LSTM(self, objective='close'):
         """Build and save the LSTM model with given forecast objective
         Return most of the params to be used in the forecast step"""
+        self.forecast_objective = objective
         self.X, self.y = get_LSTM_data_with_objective(self.currency, self.forecast_objective)
         train_gen, val_gen, test_gen, index_70pct, index_85pct, scaler_X, scaler_y = preprocessing_LSTM_data_and_get_generators(self.X, self.y)
         model = init_and_compile_model(self.X)
         model = fit_LSTM_model(model, train_gen, val_gen)
-        model.save(f'{self.currency}_LSTM_{self.forecast_objective}_model')
+        model.save(f'models/{self.currency}_LSTM_{self.forecast_objective}_model')
         return scaler_X, scaler_y, index_70pct, index_85pct, test_gen
 
-    def LSTM_predict(self):
+    def LSTM_predict(self, objective='close'):
         """Get the prediction and plot final results with LSTM"""
+        self.forecast_objective = objective
         scaler_X, scaler_y, index_70pct, index_85pct, test_gen = self.build_LSTM()
-        model = tf.keras.models.load_model(f'{self.currency}_LSTM_{self.forecast_objective}_model')
+        model = tf.keras.models.load_model(f'models/{self.currency}_LSTM_{self.forecast_objective}_model')
         df_plot = LSTM_predict_with_generator(model, self.X, self.y, scaler_X, scaler_y, index_70pct, index_85pct, test_gen)
         plot_LSTM_final_results(df_plot, self.currency)
         return df_plot
+
+    def LSTM_multi_predict(self):
+        # make 3 predictions for LSTM for the CI
+        pred_close = self.LSTM_predict()['pred_future_price'].iloc[-14:]
+        pred_high = self.LSTM_predict('high')['pred_future_price'].iloc[-14:]
+        pred_low = self.LSTM_predict('low')['pred_future_price'].iloc[-14:]
+        results = pd.concat([pred_close,pred_high,pred_low],axis=1)
+        results = results.sort_values(by=results.index[0],axis=1).set_axis(['MIN Price',
+                                                  'Predicted Price',
+                                                  'MAX price'],
+                                                 axis = 'columns')
+        # reload the date to get the X before the change by build_lstm
+        self.load_data()
+        return {'data':self.X, 'pred':results}
+
 
 if __name__ == '__main__':
     # Test function here
@@ -152,8 +169,8 @@ if __name__ == '__main__':
     # Test LSTM
     trainer = Trainer('ETH')
     # scaler_X, scaler_y, index_70pct, index_85pct, test_gen = trainer.build_LSTM()
-    df_plot = trainer.LSTM_predict()
-    print(df_plot)
+    df_plot = trainer.LSTM_multi_predict()
+    print(df_plot['pred'])
     # train_gen, val_gen, test_gen, index_70pct, index_85pct, scaler_X, scaler_y = preprocessing_LSTM_data_and_get_generators(trainer.X, y)
     # model_api = init_and_compile_model()
     # model_api = fit_LSTM_model(model_api, train_gen, val_gen)
