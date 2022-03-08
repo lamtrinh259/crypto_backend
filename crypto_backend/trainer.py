@@ -3,6 +3,7 @@ from crypto_backend.transformers import LogTransformer
 from crypto_backend.preprocessing import preprocessing_LSTM_data_and_get_generators
 from crypto_backend.utils import init_and_compile_model, fit_LSTM_model, \
      LSTM_predict_with_generator, plot_LSTM_final_results
+import crypto_backend.table as tables
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.pipeline import Pipeline, make_pipeline
 from prophet import Prophet
@@ -79,7 +80,10 @@ class Trainer(object):
         future= fbph.make_future_dataframe(periods=days,freq='d')
         forecast=fbph.predict(future)
         prediction = forecast.iloc[-14:]
-        return {'data':self.X,'predict':prediction}
+        fb_data= {'data':self.X,'predict':prediction}
+        results = tables.make_fb_table(fb_data).iloc[-14:]
+        return results
+
 
     def build_sarimax(self):
         #loading the Data
@@ -121,7 +125,11 @@ class Trainer(object):
         conf_int = np.exp(conf_int)
         upper_end = pd.Series(conf_int[:,1],time_range)
         lower_end = pd.Series(conf_int[:,0],time_range)
-        return {'data':self.X,'pred': d_inv['close'], 'upper':upper_end, 'lower':lower_end}
+        sarimax_data = {'data':self.X,'pred': d_inv['close'], 'upper':upper_end, 'lower':lower_end}
+        results = tables.make_sarimax_table(sarimax_data).iloc[-14:]
+        return results
+
+
 
     def build_LSTM(self, objective='close'):
         """Build and save the LSTM model with given forecast objective
@@ -155,7 +163,9 @@ class Trainer(object):
                                                  axis = 'columns')
         # reload the date to get the X before the change by build_lstm
         self.load_data()
-        return {'data':self.X, 'pred':results}
+        lstm_data = {'data':self.X, 'pred':results}
+        results = tables.make_LSTM_table(lstm_data).iloc[-14:]
+        return results
 
 
 if __name__ == '__main__':

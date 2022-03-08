@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from crypto_backend.trainer import Trainer
+# from crypto_backend.trainer import Trainer
 # uncomment above for local testing of the graphing functions
 
 
@@ -10,13 +10,13 @@ def make_fb_table(fb_data):
     prev_df = pd.DataFrame(fb_data['data'][['close','low','high']].iloc[-7:])
     prev_df = prev_df.rename(columns={'close':'Predicted Price',
                                     'low': 'MIN Price',
-                                    'high': 'MAX price'})
+                                    'high': 'MAX Price'})
     #grabbing the prediction data
     df = pd.DataFrame(fb_data['predict'][['ds','yhat','yhat_lower','yhat_upper']])
     df = df.rename(columns={'ds':'time',
                             'yhat':'Predicted Price',
                             'yhat_lower': 'MIN Price',
-                            'yhat_upper': 'MAX price'}).set_index('time')
+                            'yhat_upper': 'MAX Price'}).set_index('time')
     #merge the two table
     results = pd.concat([prev_df,df])
     return results
@@ -27,11 +27,11 @@ def make_sarimax_table(sarimax_data):
     prev_df = pd.DataFrame(sarimax_data['data'][['close','low','high']].iloc[-7:])
     prev_df = prev_df.rename(columns={'close':'Predicted Price',
                                     'low': 'MIN Price',
-                                    'high': 'MAX price'})
+                                    'high': 'MAX Price'})
     #grabbing the prediction data
     df = pd.DataFrame({'Predicted Price':sarimax_data['pred'],
                        'MIN Price':sarimax_data['lower'],
-                       'MAX price':sarimax_data['upper']})
+                       'MAX Price':sarimax_data['upper']})
     #merge the two table
     results = pd.concat([prev_df,df])
     return results
@@ -42,7 +42,7 @@ def make_LSTM_table(lstm_data):
     prev_df = pd.DataFrame(lstm_data['data'][['close','low','high']].iloc[-7:])
     prev_df = prev_df.rename(columns={'close':'Predicted Price',
                                     'low': 'MIN Price',
-                                    'high': 'MAX price'})
+                                    'high': 'MAX Price'})
     #grabbing the prediction data
     df = lstm_data['pred']
     #merge the two table
