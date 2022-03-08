@@ -13,3 +13,6 @@ class UtilsTester(unittest.TestCase):
     def test_reduceMem(cls):
         data = utils.reduce_mem_usage(cls.data)
         cls.assertEqual(data.test.dtype, 'int16')
+
+if __name__ == '__main__':
+    pass
