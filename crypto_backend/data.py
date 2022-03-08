@@ -59,7 +59,7 @@ def get_data_locally(crypto, last_rows=1_000_000):
         print('No such crypto pair or file exists, please check')
     return df
 
-def get_data_from_api(time='1m',currency='BTCUSD',section='hist',frames=10_000):
+def get_data_from_api(time='1m',currency='BTCUSD',section='hist',frames=10_000,save_locally = True):
     BASE_URI = "https://api-pub.bitfinex.com"
     '''
     getting the data for the currency in the time difference for the number of frames,
@@ -68,9 +68,10 @@ def get_data_from_api(time='1m',currency='BTCUSD',section='hist',frames=10_000):
     '''
     search_url = urllib.parse.urljoin(BASE_URI,f'/v2/candles/trade:{time}:t{currency}/{section}?limit={frames}')
     response = requests.get(search_url).json()
-    if response:
+    if len(response)==frames:
         df = pd.DataFrame(response[::-1]).set_axis(['time','open','close','high','low','volume'],axis='columns')
-        df.to_csv(f'local_data/{currency}_{time}_{str(datetime.now().date())}.csv')
+        if save_locally:
+            df.to_csv(f'local_data/{currency}_{time}_{str(datetime.now().date())}.csv')
         return df
     return None
 
