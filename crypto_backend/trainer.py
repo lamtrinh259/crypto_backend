@@ -66,7 +66,7 @@ class Trainer(object):
         # prophet fitting and predicting
         fbph.fit(fb_data)
         #saving the model
-        joblib.dump(fbph, f'{self.currency}_fb_prophet_model.joblib')
+        joblib.dump(fbph, f'models/{self.currency}_fb_prophet_model.joblib')
 
 
 
@@ -74,7 +74,7 @@ class Trainer(object):
     def prophecy_predict(self,days=14):
         # fbph = joblib.load('prophet.joblib')
         #load the saved the model
-        fbph = joblib.load(f'{self.currency}_fb_prophet_model.joblib')
+        fbph = joblib.load(f'models/{self.currency}_fb_prophet_model.joblib')
         # making the prediction
         future= fbph.make_future_dataframe(periods=days,freq='d')
         forecast=fbph.predict(future)
@@ -97,15 +97,15 @@ class Trainer(object):
                             trace=True,
                             error_action='ignore',
                             suppress_warnings=True)
-        joblib.dump(model, f'{self.currency}_sarimax_model.joblib')
-        joblib.dump(self.pipeSARIMAX, f'{self.currency}_sarimax_model_pipe.joblib')
+        joblib.dump(model, f'models/{self.currency}_sarimax_model.joblib')
+        joblib.dump(self.pipeSARIMAX, f'models/{self.currency}_sarimax_model_pipe.joblib')
 
     #loads the sarimax model of the currency the make the 14 day prediction.
     def sarimax_prediction(self,days=14,return_conf_int=True):
         #loads the pre_made_sarimax model
-        model = joblib.load(f'{self.currency}_sarimax_model.joblib')
+        model = joblib.load(f'models/{self.currency}_sarimax_model.joblib')
         #loads the pipeline for the model
-        self.pipeSARIMAX = joblib.load(f'{self.currency}_sarimax_model_pipe.joblib')
+        self.pipeSARIMAX = joblib.load(f'models/{self.currency}_sarimax_model_pipe.joblib')
         #makes the n-day prediction
         forecast, conf_int = model.predict(days, return_conf_int = return_conf_int, alpha=0.05)
         #generate a n-day time range for the index of the results
