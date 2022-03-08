@@ -42,10 +42,9 @@ class Trainer(object):
     def load_data(self, daily_on = True):
         self.X = get_data(self.currency)
         self.X = organize_data(self.X)
-        if daily_on:
-            self.X = daily_data(self.X)
+        # if daily_on:
+            # self.X = daily_data(self.X)
         self.lastday = self.X.index[-1]
-
 
     #generates a prophet model based on the coin
     def build_prophet(self):
@@ -126,8 +125,6 @@ class Trainer(object):
         results = tables.make_sarimax_table(sarimax_data).iloc[-14:]
         return results
 
-
-
     def build_LSTM(self, objective='close'):
         """Build and save the LSTM model with given forecast objective
         Return most of the params to be used in the forecast step"""
@@ -176,10 +173,10 @@ if __name__ == '__main__':
     # print(prediction['predict'])
 
     # Test LSTM
-    trainer = Trainer('ETH')
+    trainer = Trainer('BTC')
     # scaler_X, scaler_y, index_70pct, index_85pct, test_gen = trainer.build_LSTM()
     df_plot = trainer.LSTM_multi_predict()
-    print(df_plot['pred'])
+    print(df_plot)
     # train_gen, val_gen, test_gen, index_70pct, index_85pct, scaler_X, scaler_y = preprocessing_LSTM_data_and_get_generators(trainer.X, y)
     # model_api = init_and_compile_model()
     # model_api = fit_LSTM_model(model_api, train_gen, val_gen)
