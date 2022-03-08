@@ -76,7 +76,7 @@ def predict_fb(selected_crypto):
     """
     Returns 14 day prediction
     """
-    if 'FB_PROPHET' in cache and selected_crypto in cache['FB_PROPHET']:
+    if selected_crypto in cache['FB_PROPHET']:
         return cache['FB_PROPHET'][selected_crypto]
 
     trainer = Trainer(selected_crypto)
