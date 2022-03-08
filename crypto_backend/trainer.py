@@ -142,6 +142,7 @@ class Trainer(object):
     def LSTM_predict(self, objective='close'):
         """Get the prediction and plot final results with LSTM"""
         self.forecast_objective = objective
+        self.X, self.y = get_LSTM_data_with_objective(self.currency, self.forecast_objective)
         train_gen, val_gen, test_gen, index_70pct, index_85pct, scaler_X, scaler_y = preprocessing_LSTM_data_and_get_generators(self.X, self.y)
         # scaler_X, scaler_y, index_70pct, index_85pct, test_gen = self.build_LSTM()
         model = tf.keras.models.load_model(f'models/{self.currency}_LSTM_{self.forecast_objective}_model')
