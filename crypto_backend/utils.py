@@ -202,28 +202,34 @@ def all_grapher(input_data,currency):
     # data = datar.get_data(currency)
     # odata = datar.organize_data(data)
     # d_data = datar.daily_data(odata)
-    d_data = datar.get_data_from_api(time='1D',frames=797,save_locally=False)
-    pred_x = input_data.index[-14:]
+    d_data = input_data.data
+    pred_x = input_data.pred.index[-14:]
 
     fig2 = go.Figure(data=[
-                go.Candlestick(x=d_data['time'],
-                            open=d_data['open'],
-                            high=d_data['high'],
-                            low=d_data['low'],
-                            close=d_data['close'],
+                go.Candlestick(x = d_data['time'],
+                            open = d_data['open'],
+                            high = d_data['high'],
+                            low = d_data['low'],
+                            close = d_data['close'],
                             name = 'Historical Data'),
-                go.Scatter( x=pred_x,
-                            y=input_data['Predicted Price'],
-                            mode='lines',
+                go.Scatter( x = pred_x,
+                            y = input_data.pred['Predicted Price'],
+                            mode = 'lines',
                             name = 'Prediction'),
-                go.Scatter( x=pred_x,# +pred_x[::-1], # x, then x reversed,
-                            y=input_data['MAX Price']+input_data['MIN Price'][::-1], # upper, then lower reversed
-                            fill='toself',
-                            fillcolor='rgba(0,100,80,0.2)',
-                            line=dict(color='rgba(255,255,255,0)'),
+                go.Scatter( x=pred_x, # +pred_x[::-1], # x, then x reversed,
+                            y=input_data.pred['MAX Price'] , # upper, then lower reversed
+                            mode = 'lines',
+                            line=dict(width=0),
                             hoverinfo="skip",
-                            showlegend=False)
-                ])
+                            showlegend=False),
+                go.Scatter( x=pred_x, # +pred_x[::-1], # x, then x reversed,
+                            y=input_data.pred['MIN Price'], # upper, then lower reversed
+                            fill='tonexty',
+                            mode = 'lines',
+                            line=dict(width=0),
+                            fillcolor='rgba(68, 68, 68, 0.3)',
+                            hoverinfo="skip",
+                            showlegend=False)])
     return fig2
 
 
