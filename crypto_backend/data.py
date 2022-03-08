@@ -5,55 +5,50 @@ import urllib.parse
 import requests
 
 # Either URI or URL works
-BTC_USD_S3URI = "s3://cryptocurrency-forecasting/raw_data/btcusd.csv"
-BTC_USD_URL = "https://cryptocurrency-forecasting.s3.ap-northeast-1.amazonaws.com/raw_data/btcusd.csv"
-ETH_USD_S3URI = "s3://cryptocurrency-forecasting/raw_data/ethusd.csv"
-ETH_USD_URL = "https://cryptocurrency-forecasting.s3.ap-northeast-1.amazonaws.com/raw_data/ethusd.csv"
-LTC_USD_S3URI = "s3://cryptocurrency-forecasting/raw_data/ltcusd.csv"
-LTC_USD_URL = "https://cryptocurrency-forecasting.s3.ap-northeast-1.amazonaws.com/raw_data/ltcusd.csv"
+# Complete minute data
+# BTC_USD_S3URI = "s3://cryptocurrency-forecasting/raw_data/btcusd.csv"
+# BTC_USD_URL = "https://cryptocurrency-forecasting.s3.ap-northeast-1.amazonaws.com/raw_data/btcusd.csv"
+# ETH_USD_S3URI = "s3://cryptocurrency-forecasting/raw_data/ethusd.csv"
+# ETH_USD_URL = "https://cryptocurrency-forecasting.s3.ap-northeast-1.amazonaws.com/raw_data/ethusd.csv"
+# LTC_USD_S3URI = "s3://cryptocurrency-forecasting/raw_data/ltcusd.csv"
+# LTC_USD_URL = "https://cryptocurrency-forecasting.s3.ap-northeast-1.amazonaws.com/raw_data/ltcusd.csv"
 
-def get_data(crypto, last_rows=1_000_000):
-    """ Get dataset of selected crypto from cloud storage
-    1,000,000 data points (mins) is roughly equivalent to 2 years worth of data
+# Daily data from Jan 1st 2020 to Mar 7th 2022
+BTC_USD_S3URI = "s3://cryptocurrency-forecasting/raw_data/BTCUSD_1D_2022-03-07.csv"
+BTC_USD_URL = "https://cryptocurrency-forecasting.s3.ap-northeast-1.amazonaws.com/raw_data/BTCUSD_1D_2022-03-07.csv"
+ETH_USD_S3URI = "s3://cryptocurrency-forecasting/raw_data/ETHUSD_1D_2022-03-07.csv"
+ETH_USD_URL = "https://cryptocurrency-forecasting.s3.ap-northeast-1.amazonaws.com/raw_data/ETHUSD_1D_2022-03-07.csv"
+LTC_USD_S3URI = "s3://cryptocurrency-forecasting/raw_data/LTCUSD_1D_2022-03-07.csv"
+LTC_USD_URL = "https://cryptocurrency-forecasting.s3.ap-northeast-1.amazonaws.com/raw_data/LTCUSD_1D_2022-03-07.csv"
+
+def get_data(crypto):
+    """ Get daily dataset of selected crypto from cloud storage
     # Params: chosen crypto by the user from the front end """
     df = None
     if crypto == "BTC":
-        df_full = pd.read_csv(BTC_USD_URL)
-        n_rows = len(df_full)
-        df = pd.read_csv(BTC_USD_URL, skiprows=range(1, n_rows - last_rows))
+        df = pd.read_csv(BTC_USD_URL)
     elif crypto == 'ETH':
-        df_full = pd.read_csv(ETH_USD_URL)
-        n_rows = len(df_full)
-        df = pd.read_csv(ETH_USD_URL, skiprows=range(1, n_rows - last_rows))
+        df = pd.read_csv(ETH_USD_URL)
     elif crypto == 'LTC':
-        df_full = pd.read_csv(LTC_USD_S3URI)
-        n_rows = len(df_full)
-        df = pd.read_csv(LTC_USD_S3URI, skiprows=range(1, n_rows - last_rows))
+        df = pd.read_csv(LTC_USD_S3URI)
     else:
         print('No such crypto pair or file exists, please check')
     return df
 
-BTC_local_path = 'raw_data/btcusd.csv'
-ETH_local_path = 'raw_data/ethusd.csv'
-LTC_local_path = 'raw_data/ltcusd.csv'
+BTC_local_path = 'raw_data/BTCUSD_1D_2022-03-07.csv'
+ETH_local_path = 'raw_data/ETHUSD_1D_2022-03-07.csv'
+LTC_local_path = 'raw_data/LTCUSD_1D_2022-03-07.csv'
 
-def get_data_locally(crypto, last_rows=1_000_000):
+def get_data_locally(crypto):
     """ Get dataset of selected crypto from local drive
-    1,000,000 data points (mins) is roughly equivalent to 2 years worth of data
     # Params: chosen crypto by the user from the front end """
     df = None
     if crypto == 'BTC':
-        df_full = pd.read_csv(BTC_local_path)
-        n_rows = len(df_full)
-        df = pd.read_csv(BTC_local_path, skiprows=range(1, n_rows - last_rows))
+        df = pd.read_csv(BTC_local_path)
     elif crypto == 'ETH':
-        df_full = pd.read_csv(ETH_local_path)
-        n_rows = len(df_full)
-        df = pd.read_csv(ETH_local_path, skiprows=range(1, n_rows - last_rows))
+        df = pd.read_csv(ETH_local_path)
     elif crypto == 'LTC':
-        df_full = pd.read_csv(LTC_local_path)
-        n_rows = len(df_full)
-        df = pd.read_csv(LTC_local_path, skiprows=range(1, n_rows - last_rows))
+        df = pd.read_csv(LTC_local_path)
     else:
         print('No such crypto pair or file exists, please check')
     return df
@@ -117,7 +112,6 @@ def get_LSTM_data_with_objective(crypto, forecast_objective):
     cutoff_date = datetime.strptime('2020-01-01', '%Y-%M-%d')
     if df.index[0] < cutoff_date:
         df = df[cutoff_date:]
-    df = daily_data(df)
     df = get_features(df)
     y = df[forecast_objective][14:] # Target, exclude the first 14 days
     X = df[:-14]  # Exclude the last 14 days, all columns will be used as features
@@ -125,9 +119,9 @@ def get_LSTM_data_with_objective(crypto, forecast_objective):
 
 if __name__ == '__main__':
     # For testing
-    get_data_from_api(time='1D',frames=797)
-    get_data_from_api(time='1D',currency = 'ETHUSD',frames=797)
-    get_data_from_api(time='1D',currency = 'LTCUSD',frames=797)
-    # get_data('BTC')
+    # get_data_from_api(time='1D',frames=797)
+    # get_data_from_api(time='1D',currency = 'ETHUSD',frames=797)
+    # get_data_from_api(time='1D',currency = 'LTCUSD',frames=797)
+    get_data('BTC')
     # get_data('ETH')
     # get_data('LTC')
