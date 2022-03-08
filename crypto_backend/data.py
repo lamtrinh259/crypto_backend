@@ -126,7 +126,9 @@ def get_LSTM_data_with_objective(crypto, forecast_objective):
 
 if __name__ == '__main__':
     # For testing
-    print(get_data_from_api())
+    get_data_from_api(time='1D',frames=797)
+    get_data_from_api(time='1D',currency = 'ETHUSD',frames=797)
+    get_data_from_api(time='1D',currency = 'LTCUSD',frames=797)
     # get_data('BTC')
     # get_data('ETH')
     # get_data('LTC')
