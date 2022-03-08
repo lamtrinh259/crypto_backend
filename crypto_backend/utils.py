@@ -1,6 +1,5 @@
 # Tools to be used during the operations
 from cgi import test
-from turtle import color
 import plotly.graph_objects as go
 import crypto_backend.data as datar
 import pandas as pd
