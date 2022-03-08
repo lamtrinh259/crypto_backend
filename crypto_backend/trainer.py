@@ -10,6 +10,7 @@ import pmdarima as pm
 import joblib
 import pandas as pd
 import tensorflow as tf
+import numpy as np
 
 
 class Trainer(object):
@@ -65,7 +66,7 @@ class Trainer(object):
         # prophet fitting and predicting
         fbph.fit(fb_data)
         #saving the model
-        joblib.dump(fbph, f'{self.currency}_fb_prophet_model.joblib')
+        joblib.dump(fbph, f'models/{self.currency}_fb_prophet_model.joblib')
 
 
 
@@ -73,12 +74,12 @@ class Trainer(object):
     def prophecy_predict(self,days=14):
         # fbph = joblib.load('prophet.joblib')
         #load the saved the model
-        fbph = joblib.load(f'{self.currency}_fb_prophet_model.joblib')
+        fbph = joblib.load(f'models/{self.currency}_fb_prophet_model.joblib')
         # making the prediction
         future= fbph.make_future_dataframe(periods=days,freq='d')
         forecast=fbph.predict(future)
-
-        return {'data':self.X,'predict':forecast}
+        prediction = forecast.iloc[-14:]
+        return {'data':self.X,'predict':prediction}
 
     def build_sarimax(self):
         #loading the Data
@@ -96,15 +97,15 @@ class Trainer(object):
                             trace=True,
                             error_action='ignore',
                             suppress_warnings=True)
-        joblib.dump(model, f'{self.currency}_sarimax_model.joblib')
-        joblib.dump(self.pipeSARIMAX, f'{self.currency}_sarimax_model_pipe.joblib')
+        joblib.dump(model, f'models/{self.currency}_sarimax_model.joblib')
+        joblib.dump(self.pipeSARIMAX, f'models/{self.currency}_sarimax_model_pipe.joblib')
 
     #loads the sarimax model of the currency the make the 14 day prediction.
     def sarimax_prediction(self,days=14,return_conf_int=True):
         #loads the pre_made_sarimax model
-        model = joblib.load(f'{self.currency}_sarimax_model.joblib')
+        model = joblib.load(f'models/{self.currency}_sarimax_model.joblib')
         #loads the pipeline for the model
-        self.pipeSARIMAX = joblib.load(f'{self.currency}_sarimax_model_pipe.joblib')
+        self.pipeSARIMAX = joblib.load(f'models/{self.currency}_sarimax_model_pipe.joblib')
         #makes the n-day prediction
         forecast, conf_int = model.predict(days, return_conf_int = return_conf_int, alpha=0.05)
         #generate a n-day time range for the index of the results
@@ -116,6 +117,8 @@ class Trainer(object):
         d_temp.fillna(1)
         #inverse transform the data
         d_inv = self.pipeSARIMAX.inverse_transform(d_temp)
+        d_inv =  d_inv.iloc[1:]
+        conf_int = np.exp(conf_int)
         upper_end = pd.Series(conf_int[:,1],time_range)
         lower_end = pd.Series(conf_int[:,0],time_range)
         return {'pred': d_inv['close'], 'upper':upper_end, 'lower':lower_end}
@@ -132,7 +135,7 @@ class Trainer(object):
 
     def LSTM_predict(self):
         """Get the prediction and plot final results with LSTM"""
-        scaler_X, scaler_y, index_70pct, index_85pct, test_gen = self.build_LSTM(self)
+        scaler_X, scaler_y, index_70pct, index_85pct, test_gen = self.build_LSTM()
         model = tf.keras.models.load_model(f'{self.currency}_LSTM_{self.forecast_objective}_model')
         df_plot = LSTM_predict_with_generator(model, self.X, self.y, scaler_X, scaler_y, index_70pct, index_85pct, test_gen)
         plot_LSTM_final_results(df_plot, self.currency)
@@ -148,7 +151,7 @@ if __name__ == '__main__':
 
     # Test LSTM
     trainer = Trainer('ETH')
-    scaler_X, scaler_y, index_70pct, index_85pct, test_gen = trainer.build_LSTM()
+    # scaler_X, scaler_y, index_70pct, index_85pct, test_gen = trainer.build_LSTM()
     df_plot = trainer.LSTM_predict()
     print(df_plot)
     # train_gen, val_gen, test_gen, index_70pct, index_85pct, scaler_X, scaler_y = preprocessing_LSTM_data_and_get_generators(trainer.X, y)
