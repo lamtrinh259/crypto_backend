@@ -61,6 +61,10 @@ class DataTester(unittest.TestCase):
                         cols)
         cls.assertEqual(len(cls.X),len(cls.y))
 
+    def test_getapidata_shape(cls):
+        data = data_man.get_data_from_api(frames=100)
+        cls.assertEqual(data.shape, (100,6))
+
 
 
 if __name__ == '__main__':
