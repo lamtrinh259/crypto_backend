@@ -13,13 +13,13 @@ def make_fb_table(fb_data):
     #                                 'high': 'MAX Price'})
     #grabbing the prediction data
     df = pd.DataFrame(fb_data['predict'][['ds','yhat','yhat_lower','yhat_upper']])
-    df = df.rename(columns={'ds':'time',
+    fb_data['predict'] = df.rename(columns={'ds':'time',
                             'yhat':'Predicted Price',
                             'yhat_lower': 'MIN Price',
                             'yhat_upper': 'MAX Price'}).set_index('time')
     #merge the two table
     # results = pd.concat([prev_df,df])
-    return df
+    return fb_data
 
 def make_sarimax_table(sarimax_data):
     # writes a table to be displayed on streamlit

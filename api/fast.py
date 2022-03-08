@@ -39,7 +39,7 @@ def app_start():
             model_predict = {
                 'FB_PROPHET': trainer.prophecy_predict,
                 'SARIMAX': trainer.sarimax_prediction,
-                'LSTM' : trainer.LSTM_predict
+                'LSTM' : trainer.LSTM_multi_predict
             }
 
             print('{} Model Prediction for {}'.format(model, curr))
