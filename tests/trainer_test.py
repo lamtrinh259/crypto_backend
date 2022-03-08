@@ -11,12 +11,12 @@ class TrainerTester(unittest.TestCase):
     def test_prophet_predict_type(cls):
         #test to see if returns a dataframe
         pred = cls.trainer.prophecy_predict()
-        cls.assertEqual(type(pred['predict']),pd.DataFrame)
+        cls.assertEqual(type(pred),pd.DataFrame)
 
     def test_prophet_predict_length(cls):
         #test to see if prediction is 14 days
         pred = cls.trainer.prophecy_predict()
-        cls.assertEqual(len(pred['predict']), 14)
+        cls.assertEqual(len(pred), 14)
 
     def test_prophet_predict_values(cls):
         #test to see if predictions are non-zero
