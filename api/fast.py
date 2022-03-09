@@ -23,8 +23,8 @@ app.add_middleware(
 def app_start():
     currency = [
         'BTC',
-        # 'ETH',
-        # 'LTC'
+        'ETH',
+        'LTC'
         ]
 
     models = [
