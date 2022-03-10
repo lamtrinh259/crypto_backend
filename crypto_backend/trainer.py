@@ -4,7 +4,6 @@ from crypto_backend.preprocessing import preprocessing_LSTM_data_and_get_generat
 from crypto_backend.utils import init_and_compile_model, fit_LSTM_model, \
      LSTM_predict_with_generator, plot_LSTM_final_results
 import crypto_backend.table as tables
-from sklearn.preprocessing import MinMaxScaler
 from sklearn.pipeline import Pipeline, make_pipeline
 from prophet import Prophet
 import pmdarima as pm
@@ -157,11 +156,14 @@ class Trainer(object):
                                                   'Predicted Price',
                                                   'MAX Price'],
                                                  axis = 'columns')
-
+        results2= results.copy()
+        for v,row in enumerate(results.iterrows()):
+            results2.iloc[v]= np.sort(list(row)[1:])
+        results2
         # reload the date to get the X before the change by build_lstm
         self.load_data()
         results = results.astype(float)
-        lstm_data = {'data':self.X, 'predict':results}
+        lstm_data = {'data':self.X, 'predict':results2}
         # results = tables.make_LSTM_table(lstm_data)
         return lstm_data
 
