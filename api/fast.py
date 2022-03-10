@@ -19,7 +19,7 @@ app.add_middleware(
 )
 
 # Initialize Model for Cache
-@app.on_event("startup")
+# @app.on_event("startup")
 def app_start():
     currency = [
         'BTC',
