@@ -159,10 +159,10 @@ class Trainer(object):
         results2= results.copy()
         for v,row in enumerate(results.iterrows()):
             results2.iloc[v]= np.sort(list(row)[1:])
-        results2
+        results = results.astype(float)
+        results2 = results2.astype(float)
         # reload the date to get the X before the change by build_lstm
         self.load_data()
-        results = results.astype(float)
         lstm_data = {'data':self.X, 'predict':results2}
         # results = tables.make_LSTM_table(lstm_data)
         return lstm_data

@@ -107,6 +107,7 @@ gcloud_run:
 	gcloud run deploy \
 		--image ${REGION_UR}/${PROJECT_ID}/${DOCKER_IMAGE_NAME} \
 		--memory 4Gi \
+		--timeout 600 \
 		--platform managed \
 		--region ${REGION}
 
