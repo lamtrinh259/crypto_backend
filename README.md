@@ -1,10 +1,10 @@
-# Data analysis
-- Document here the project: crypto_backend
-- Description: Project Description
-- Data Source:
-- Type of analysis:
+# Cryptocurrencies prices forecasting
+- Repo name: crypto_backend
+- Description: the back-end (algorithsm, functions, etc.) for the cryptocurrencies prices forecasting app
+- Data Source: from Bitfinex exchange
+- Type of project: ML algorithms (Prophet, SARIMAX, and LSTM) for forecasting and data visualization with plotly
 
-Please document the project the better you can.
+Below is some basic guidance if you want to clone the project to get started. 
 
 # Startup the project
 
