@@ -19,7 +19,6 @@ def get_features(df, row = False):
     df_feat['STD_DEV_7'] = df_feat.iloc[:,1].rolling(window=7).std()
     # Features from ta-lib as example
     df_feat.ta.donchian(lower_length=10, upper_length=15, append=True)
-
     # Drop the NA rows created by the SMA indicators
     df_feat.dropna(inplace = True)
     return df_feat
