@@ -11,6 +11,9 @@ scikit-learn
 tensorflow
 prophet
 pmdarima
+TA-Lib
+pandas_ta
+
 
 # tests/linter
 black
