@@ -78,7 +78,11 @@ JOB_NAME=crypto_prediction_$(shell date +'%Y%m%d_%H%M%S')
 
 #### GCS config - - - - - - - - - - - - - - - - - - - - - -
 DOCKER_IMAGE_NAME=crypto_predict
+## Save TJ's GCP credentials to roll back just in case if mine doesn't work
 GOOGLE_APPLICATION_CREDENTIALS = /home/tjp1992/code/tjp1992/gcp/wagon-bootcamp-337804-fcbb82b2e82e.json
+
+# Lam's GCP credentials
+# GOOGLE_APPLICATION_CREDENTIALS = /home/lamtrinh259/.config/gcloud/application_default_credentials.json
 
 run_locally:
 	@python -m ${PACKAGE_NAME}.${FILENAME}
