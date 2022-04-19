@@ -4,11 +4,13 @@
 # path of the file to upload to gcp (the path of the file should be absolute or should match the directory where the make command is run)
 LOCAL_PATH=
 
-# project id
-PROJECT_ID=wagon-bootcamp-337804
+# old project id from TJ
+# PROJECT_ID=wagon-bootcamp-337804
+PROJECT_ID=le-wagon-final-project
 
-# bucket name
-BUCKET_NAME=02-crypto_prediction
+# old bucket name from TJ
+# BUCKET_NAME=02-crypto_prediction
+BUCKET_NAME=crypto_forecasting
 
 # bucket directory in which to store the uploaded file (we choose to name this data as a convention)
 BUCKET_FOLDER=data
@@ -77,12 +79,13 @@ FILENAME=trainer
 JOB_NAME=crypto_prediction_$(shell date +'%Y%m%d_%H%M%S')
 
 #### GCS config - - - - - - - - - - - - - - - - - - - - - -
-DOCKER_IMAGE_NAME=crypto_predict
+# DOCKER_IMAGE_NAME=crypto_predict
+DOCKER_IMAGE_NAME=crypto_forecasting
 ## Save TJ's GCP credentials to roll back just in case if mine doesn't work
-GOOGLE_APPLICATION_CREDENTIALS = /home/tjp1992/code/tjp1992/gcp/wagon-bootcamp-337804-fcbb82b2e82e.json
+# GOOGLE_APPLICATION_CREDENTIALS = /home/tjp1992/code/tjp1992/gcp/wagon-bootcamp-337804-fcbb82b2e82e.json
 
 # Lam's GCP credentials
-# GOOGLE_APPLICATION_CREDENTIALS = /home/lamtrinh259/.config/gcloud/application_default_credentials.json
+GOOGLE_APPLICATION_CREDENTIALS = /home/lamtrinh259/.config/gcloud/application_default_credentials.json
 
 run_locally:
 	@python -m ${PACKAGE_NAME}.${FILENAME}
