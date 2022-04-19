@@ -176,12 +176,12 @@ if __name__ == '__main__':
     # # print(trainer.X.iloc[0])
     # print(prediction['predict'])
 
-    # Test LSTM
-    for coin in ['BTC','ETH','LTC']:
+    # Test SARIMAX & LSTM
+    for coin in ['BTC']:
         trainer = Trainer(coin)
         # scaler_X, scaler_y, index_70pct, index_85pct, test_gen = trainer.build_LSTM()
         trainer.load_data()
-        trainer.build_sarimax()
+        trainer.build_LSTM()
     # df_plot = trainer.LSTM_multi_predict()
     # print(df_plot)
     # train_gen, val_gen, test_gen, index_70pct, index_85pct, scaler_X, scaler_y = preprocessing_LSTM_data_and_get_generators(trainer.X, y)

@@ -12,13 +12,13 @@
 # - activate the tests in GitHub CI
 # - uncomment the content of the CD paragraph (lines 57-75)
 
-name: Python package
+# name: Python package
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+# on:
+#   push:
+#     branches: [ master ]
+#   pull_request:
+#     branches: [ master ]
 
 # jobs:
 

@@ -13,21 +13,13 @@ import requests
 # LTC_USD_S3URI = "s3://cryptocurrency-forecasting/raw_data/ltcusd.csv"
 # LTC_USD_URL = "https://cryptocurrency-forecasting.s3.ap-northeast-1.amazonaws.com/raw_data/ltcusd.csv"
 
-# Daily data from Jan 1st 2020 to Mar 7th 2022, old daily data
-# BTC_USD_S3URI = "s3://cryptocurrency-forecasting/raw_data/BTCUSD_1D_2022-03-07.csv"
-# BTC_USD_URL = "https://cryptocurrency-forecasting.s3.ap-northeast-1.amazonaws.com/raw_data/BTCUSD_1D_2022-03-07.csv"
-# ETH_USD_S3URI = "s3://cryptocurrency-forecasting/raw_data/ETHUSD_1D_2022-03-07.csv"
-# ETH_USD_URL = "https://cryptocurrency-forecasting.s3.ap-northeast-1.amazonaws.com/raw_data/ETHUSD_1D_2022-03-07.csv"
-# LTC_USD_S3URI = "s3://cryptocurrency-forecasting/raw_data/LTCUSD_1D_2022-03-07.csv"
-# LTC_USD_URL = "https://cryptocurrency-forecasting.s3.ap-northeast-1.amazonaws.com/raw_data/LTCUSD_1D_2022-03-07.csv"
-
-# Updated daily data from Jan 2nd 2022 to Apr 18th 2022
-BTC_USD_S3URI = "s3://cryptocurrency-forecasting/raw_data/BTCUSD_1D_2022-04-18.csv"
-BTC_USD_URL = "https://cryptocurrency-forecasting.s3.ap-northeast-1.amazonaws.com/raw_data/BTCUSD_1D_2022-04-18.csv"
-ETH_USD_S3URI = "s3://cryptocurrency-forecasting/raw_data/ETHUSD_1D_2022-04-18.csv"
-ETH_USD_URL = "https://cryptocurrency-forecasting.s3.ap-northeast-1.amazonaws.com/raw_data/ETHUSD_1D_2022-04-18.csv"
-LTC_USD_S3URI = "s3://cryptocurrency-forecasting/raw_data/LTCUSD_1D_2022-04-18.csv"
-LTC_USD_URL = "https://cryptocurrency-forecasting.s3.ap-northeast-1.amazonaws.com/raw_data/LTCUSD_1D_2022-04-18.csv"
+# Daily data from Jan 1st 2020 to Mar 7th 2022
+BTC_USD_S3URI = "s3://cryptocurrency-forecasting/raw_data/BTCUSD_1D_2022-03-07.csv"
+BTC_USD_URL = "https://cryptocurrency-forecasting.s3.ap-northeast-1.amazonaws.com/raw_data/BTCUSD_1D_2022-03-07.csv"
+ETH_USD_S3URI = "s3://cryptocurrency-forecasting/raw_data/ETHUSD_1D_2022-03-07.csv"
+ETH_USD_URL = "https://cryptocurrency-forecasting.s3.ap-northeast-1.amazonaws.com/raw_data/ETHUSD_1D_2022-03-07.csv"
+LTC_USD_S3URI = "s3://cryptocurrency-forecasting/raw_data/LTCUSD_1D_2022-03-07.csv"
+LTC_USD_URL = "https://cryptocurrency-forecasting.s3.ap-northeast-1.amazonaws.com/raw_data/LTCUSD_1D_2022-03-07.csv"
 
 def get_data(crypto):
     """ Get daily dataset of selected crypto from cloud storage
@@ -128,9 +120,7 @@ def get_LSTM_data_with_objective(crypto, forecast_objective):
 
 if __name__ == '__main__':
     # For testing
-    pass
-    # Get 839 days worth of data from the present day and save csv file locally
-    # get_data_from_api(time='1D',currency='LTCUSD',frames=839,save_locally=True)
+    print(get_data_from_api(time='1D',frames=797,save_locally=False))
     # get_data_from_api(time='1D',currency = 'ETHUSD',frames=797)
     # get_data_from_api(time='1D',currency = 'LTCUSD',frames=797)
     # get_data('BTC')
