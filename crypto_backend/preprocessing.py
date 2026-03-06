@@ -1,7 +1,7 @@
 from sklearn.preprocessing import MinMaxScaler
 from crypto_backend.data import get_data
 import tensorflow as tf
-from keras.preprocessing.sequence import TimeseriesGenerator
+import numpy as np
 
 def preprocessing_LSTM_data_and_get_generators(X, y):
     """ Preprocessing data with MinMax scaler and return the 3 generators, the 2 index percentiles
@@ -28,10 +28,29 @@ def preprocessing_LSTM_data_and_get_generators(X, y):
     batch_size = 32 # Number of observations
     n_features = X_scaled.shape[1]
 
-    train_generator = TimeseriesGenerator(X_scaled, y_scaled, length=seq_len, batch_size=batch_size, end_index = index_70pct)
-    val_generator = TimeseriesGenerator(X_scaled, y_scaled, length=seq_len, batch_size=batch_size, \
-                                        start_index = index_70pct, end_index = index_85pct)
-    test_generator = TimeseriesGenerator(X_scaled, y_scaled, length=seq_len, batch_size=batch_size, start_index = index_85pct)
+    # Use tf.keras.utils.timeseries_dataset_from_array instead of deprecated TimeseriesGenerator
+    train_generator = tf.keras.utils.timeseries_dataset_from_array(
+        X_scaled, y_scaled, 
+        sequence_length=seq_len, 
+        sequence_stride=1,
+        batch_size=batch_size, 
+        end_index=index_70pct
+    )
+    val_generator = tf.keras.utils.timeseries_dataset_from_array(
+        X_scaled, y_scaled, 
+        sequence_length=seq_len, 
+        sequence_stride=1,
+        batch_size=batch_size,
+        start_index=index_70pct, 
+        end_index=index_85pct
+    )
+    test_generator = tf.keras.utils.timeseries_dataset_from_array(
+        X_scaled, y_scaled, 
+        sequence_length=seq_len, 
+        sequence_stride=1,
+        batch_size=batch_size, 
+        start_index=index_85pct
+    )
     return train_generator, val_generator, test_generator, index_70pct, index_85pct, scaler_X, scaler_y
 
 

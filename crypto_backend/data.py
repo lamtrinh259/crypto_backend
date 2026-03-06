@@ -23,21 +23,26 @@ LTC_USD_URL = "https://cryptocurrency-forecasting.s3.ap-northeast-1.amazonaws.co
 
 def get_data(crypto):
     """ Get daily dataset of selected crypto from cloud storage
+    Falls back to local data if remote URLs are unavailable
     # Params: chosen crypto by the user from the front end """
     df = None
-    if crypto == "BTC":
-        df = pd.read_csv(BTC_USD_URL)
-    elif crypto == 'ETH':
-        df = pd.read_csv(ETH_USD_URL)
-    elif crypto == 'LTC':
-        df = pd.read_csv(LTC_USD_S3URI)
-    else:
-        print('No such crypto pair or file exists, please check')
+    try:
+        if crypto == "BTC":
+            df = pd.read_csv(BTC_USD_URL)
+        elif crypto == 'ETH':
+            df = pd.read_csv(ETH_USD_URL)
+        elif crypto == 'LTC':
+            df = pd.read_csv(LTC_USD_S3URI)
+        else:
+            print('No such crypto pair or file exists, please check')
+    except Exception as e:
+        print(f'Remote data unavailable for {crypto}, using local data: {e}')
+        df = get_data_locally(crypto)
     return df
 
-BTC_local_path = 'raw_data/BTCUSD_1D_2022-03-07.csv'
-ETH_local_path = 'raw_data/ETHUSD_1D_2022-03-07.csv'
-LTC_local_path = 'raw_data/LTCUSD_1D_2022-03-07.csv'
+BTC_local_path = 'local_data/BTCUSD_1D_2022-03-08.csv'
+ETH_local_path = 'local_data/ETHUSD_1D_2022-03-08.csv'
+LTC_local_path = 'local_data/LTCUSD_1D_2022-03-08.csv'
 
 def get_data_locally(crypto):
     """ Get dataset of selected crypto from local drive
@@ -73,7 +78,7 @@ def get_data_from_api(time='1D',currency='BTCUSD',section='hist',frames=10_000,s
 
 def organize_data(df):
     """Returns a dataframe with time in human-readable time as the index"""
-    df.time = pd.to_datetime(df.time, format='%d/%m/%Y')
+    df.time = pd.to_datetime(df.time)
     df_t = df.set_index('time')
     return df_t
 
