@@ -71,7 +71,11 @@ class Trainer(object):
     def prophecy_predict(self,days=14):
         # fbph = joblib.load('prophet.joblib')
         #load the saved the model
-        fbph = joblib.load(f'models/{self.currency}_fb_prophet_model.joblib')
+        try:
+            fbph = joblib.load(f'models/{self.currency}_fb_prophet_model.joblib')
+        except Exception as e:
+            print(f'Error loading Prophet model: {e}')
+            return {'error': f'Prophet model loading failed: {str(e)}'}
         # making the prediction
         future= fbph.make_future_dataframe(periods=days,freq='d')
         forecast=fbph.predict(future)
@@ -102,9 +106,13 @@ class Trainer(object):
     #loads the sarimax model of the currency the make the 14 day prediction.
     def sarimax_prediction(self,days=14,return_conf_int=True):
         #loads the pre_made_sarimax model
-        model = joblib.load(f'models/{self.currency}_sarimax_model.joblib')
-        #loads the pipeline for the model
-        self.pipeSARIMAX = joblib.load(f'models/{self.currency}_sarimax_model_pipe.joblib')
+        try:
+            model = joblib.load(f'models/{self.currency}_sarimax_model.joblib')
+            #loads the pipeline for the model
+            self.pipeSARIMAX = joblib.load(f'models/{self.currency}_sarimax_model_pipe.joblib')
+        except Exception as e:
+            print(f'Error loading SARIMAX model: {e}')
+            return {'error': f'SARIMAX model loading failed: {str(e)}'}
         #makes the n-day prediction
         forecast, conf_int = model.predict(days, return_conf_int = return_conf_int, alpha=0.05)
         #generate a n-day time range for the index of the results
@@ -141,7 +149,18 @@ class Trainer(object):
         self.X, self.y = get_LSTM_data_with_objective(self.currency, self.forecast_objective)
         train_gen, val_gen, test_gen, index_70pct, index_85pct, scaler_X, scaler_y = preprocessing_LSTM_data_and_get_generators(self.X, self.y)
         # scaler_X, scaler_y, index_70pct, index_85pct, test_gen = self.build_LSTM()
-        model = tf.keras.models.load_model(f'models/{self.currency}_LSTM_{self.forecast_objective}_model')
+        try:
+            # Try loading as Keras 3 format first
+            model = tf.keras.models.load_model(f'models/{self.currency}_LSTM_{self.forecast_objective}_model', compile=False)
+        except Exception as e:
+            # Fall back to tf.saved_model.load for legacy SavedModel format
+            print(f'Loading LSTM model using tf.saved_model.load for legacy format')
+            try:
+                model = tf.saved_model.load(f'models/{self.currency}_LSTM_{self.forecast_objective}_model')
+            except Exception as e2:
+                print(f'Error loading LSTM model: {e2}')
+                # Return a mock result with error message
+                return pd.DataFrame({'error': [f'LSTM model loading failed: {str(e2)}']})
         df_plot = LSTM_predict_with_generator(model, self.X, self.y, scaler_X, scaler_y, index_70pct, index_85pct, test_gen)
         # plot_LSTM_final_results(df_plot, self.currency)
         return df_plot

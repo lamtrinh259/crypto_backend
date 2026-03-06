@@ -45,8 +45,29 @@ def LSTM_predict_with_generator(model, X, y, scaler_X, scaler_y, index_70pct, in
     # Actual prices from the entire data
     df_actual = pd.DataFrame({'actual_price':  y.values, 'date': y.index})
 
+    # Helper function to get predictions from model (handles both Keras model and SavedModel)
+    def get_predictions(model, data):
+        # Check if it's a SavedModel (has signatures attribute)
+        if hasattr(model, 'signatures'):
+            # Use the serving_default signature
+            infer = model.signatures['serving_default']
+            # Convert data to tensor
+            if isinstance(data, tf.data.Dataset):
+                # For dataset, we need to iterate
+                results = []
+                for batch in data:
+                    result = infer(batch[0])
+                    results.append(result['output_0'].numpy())
+                return np.concatenate(results, axis=0)
+            else:
+                # For numpy array
+                result = infer(tf.convert_to_tensor(data, dtype=tf.float32))
+                return result['output_0'].numpy()
+        else:
+            return model.predict(data)
+
     # Predicted prices from the given generator set
-    y_in_sample_pred = model.predict(test_generator)
+    y_in_sample_pred = get_predictions(model, test_generator)
     y_in_sample_pred_prices = scaler_y.inverse_transform(y_in_sample_pred)
     days_in_sample_pred = y[index_85pct+30:].index
     # print(days_in_sample_pred)
@@ -61,7 +82,7 @@ def LSTM_predict_with_generator(model, X, y, scaler_X, scaler_y, index_70pct, in
         seq_X.append(scaled_X[-44+i:-14+i])
     seq_X = np.array(seq_X)
     # Predict the future 14 days from the last 44-day values
-    y_pred = model.predict(seq_X)
+    y_pred = get_predictions(model, seq_X)
     y_pred_prices = scaler_y.inverse_transform(y_pred)
     # Get the values of the extra days for future predicted prices
     days_future_pred = y[-14:].index + timedelta(14)
